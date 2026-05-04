@@ -29,10 +29,10 @@
 
     ### Step 1: Research and Gather Context
 
-    - Use the **Agent tool with `subagent_type: "Explore"`** following the `<research_guide>` below to autonomously gather necessary context.
-    - When investigating independent areas (e.g., frontend + backend, API + DB), launch **multiple Agent calls in parallel within a single message** to maximize efficiency.
-    - After receiving the subagent results, continue the planning reasoning using only read-only tools (Read, Grep, Glob) as needed — do not start implementation.
-    - For trivial or narrowly-scoped requests where subagent overhead is not justified, perform the research yourself using Read/Grep/Glob directly.
+    - Run `#tool:runSubagent` using the instructions in `<research_guide>` to autonomously gather necessary context.
+    - When investigating independent areas (e.g., frontend + backend), launch parallel subagents to maximize efficiency.
+    - After receiving the results from `runSubagent`, **STOP all tool usage** and proceed manually.
+    - If `runSubagent` is not available, perform the research steps yourself using the tools available. Read multiple files in parallel when gathering context.
 
     ### Step 2: Define Commit Structure
 
