@@ -20,8 +20,8 @@ Each command is a thin wrapper that fetches its instructions from `instructions/
 
 | Command | Models | Purpose |
 |---------|---------|-----------|
-| `/ai-commit` | - claude: claude-haiku-4-5<br>- copilot: GPT-5 mini<br>- opencode: opencode-go/deepseek-v4-flash | Generates a Conventional Commits message from `git diff --cached`. Subject ≤50 chars, body only when the *why* is not obvious. `git commit` with explicit authorization |
-| `/ai-pr` | - claude: claude-haiku-4-5<br>- copilot: GPT-5 mini<br>- opencode: opencode-go/deepseek-v4-flash | Synthesizes PR title + body from spec/plan/review/security/performance/accessibility + git log. Saves draft and opens PR via `gh` with explicit authorization |
+| `/ai-commit` | **opencode-go/deepseek-v4-flash**<br>\| claude-haiku-4-5<br>\| GPT-5 mini (Copilot)<br> | Generates a Conventional Commits message from `git diff --cached`. Subject ≤50 chars, body only when the *why* is not obvious. `git commit` with explicit authorization |
+| `/ai-pr` | **opencode-go/deepseek-v4-flash**<br>\| claude-haiku-4-5<br>\| GPT-5 mini (Copilot) | Synthesizes PR title + body from spec/plan/review/security/performance/accessibility + git log. Saves draft and opens PR via `gh` with explicit authorization |
 
 ## Triage in `ai-4-review`
 
