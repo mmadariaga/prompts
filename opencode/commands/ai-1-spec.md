@@ -1,0 +1,6 @@
+---
+description: Structured planning prompt — deconstructs a feature request into a testable, commit-oriented implementation plan saved as plans/{feature-name}/spec.md
+model: opencode-go/kimi-k2.6
+---
+
+Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/spec.md and follow those instructions exactly. Feature request: $ARGUMENTS
