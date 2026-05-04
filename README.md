@@ -8,20 +8,20 @@ Cada comando es un wrapper fino que descarga sus instrucciones desde `instructio
 
 | Comando | Modelos recomendados | Entrada | Salida | Propósito |
 |---------|---------|---------|--------|-----------|
-| `/ai-1-spec` | claude: claude-opus-4-7<br>copilot: Claude Opus 4.6<br>opencode: opencode-go/kimi-k2.6 | feature description | `plans/{f}/spec.md` | Deconstruye la feature en pasos testables, decisiones de diseño, perfil de experto, docs requeridas |
-| `/ai-2-plan` | claude: claude-sonnet-4-6<br>copilot: Claude Sonnet 4.6<br>opencode: opencode-go/kimi-k2.6 | `spec.md` | `plans/{f}/plan.md` | Plan de implementación con código, checkboxes, verificación automatizada/humana, STOP & COMMIT por step |
-| `/ai-3-implement` | claude: claude-haiku-4-5<br>copilot: GPT-5 mini<br>opencode: opencode-go/deepseek-v4-flash | `plan.md` | código | Ejecuta el plan paso a paso, marca checkboxes, pide autorización para git ops |
-| `/ai-4-review` | claude: claude-sonnet-4-6<br>copilot: Claude Sonnet 4.6<br>opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/review.md` | Code review holístico (correctness, maintainability, testing, consistency). **Router de triage** → recomienda los siguientes audits si la superficie cambió |
-| `/ai-5-security` | claude: claude-opus-4-7<br>copilot: Claude Opus 4.6<br>opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/security.md` | SAST + SCA, mapeo CWE/CVE, OWASP/PCI/GDPR. file:line + taint flow obligatorios |
-| `/ai-6-performance` | claude: claude-sonnet-4-6<br>copilot: Claude Sonnet 4.6<br>opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/performance.md` | Audit por tier (backend / frontend / db / queue). Evidence-based, sin especulación |
-| `/ai-7-accessibility` | claude: claude-sonnet-4-6<br>copilot: Claude Sonnet 4.6<br>opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/accessibility.md` | WCAG 2.2 AA estático (+ axe/Lighthouse opcional con `--runtime`) |
+| `/ai-1-spec` | - claude: claude-opus-4-7<br>- copilot: Claude Opus 4.6<br>- opencode: opencode-go/kimi-k2.6 | feature description | `plans/{f}/spec.md` | Deconstruye la feature en pasos testables, decisiones de diseño, perfil de experto, docs requeridas |
+| `/ai-2-plan` | - claude: claude-sonnet-4-6<br>- copilot: Claude Sonnet 4.6<br>- opencode: opencode-go/kimi-k2.6 | `spec.md` | `plans/{f}/plan.md` | Plan de implementación con código, checkboxes, verificación automatizada/humana, STOP & COMMIT por step |
+| `/ai-3-implement` | - claude: claude-haiku-4-5<br>- copilot: GPT-5 mini<br>- opencode: opencode-go/deepseek-v4-flash | `plan.md` | código | Ejecuta el plan paso a paso, marca checkboxes, pide autorización para git ops |
+| `/ai-4-review` | - claude: claude-sonnet-4-6<br>- copilot: Claude Sonnet 4.6<br>- opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/review.md` | Code review holístico (correctness, maintainability, testing, consistency). **Router de triage** → recomienda los siguientes audits si la superficie cambió |
+| `/ai-5-security` | - claude: claude-opus-4-7<br>- copilot: Claude Opus 4.6<br>- opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/security.md` | SAST + SCA, mapeo CWE/CVE, OWASP/PCI/GDPR. file:line + taint flow obligatorios |
+| `/ai-6-performance` | - claude: claude-sonnet-4-6<br>- copilot: Claude Sonnet 4.6<br>- opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/performance.md` | Audit por tier (backend / frontend / db / queue). Evidence-based, sin especulación |
+| `/ai-7-accessibility` | - claude: claude-sonnet-4-6<br>- copilot: Claude Sonnet 4.6<br>- opencode: opencode-go/kimi-k2.6 | `spec.md` + diff | `plans/{f}/accessibility.md` | WCAG 2.2 AA estático (+ axe/Lighthouse opcional con `--runtime`) |
 
 ## Comandos on-demand (sin número)
 
 | Comando | Modelos | Propósito |
 |---------|---------|-----------|
-| `/ai-commit` | claude: claude-haiku-4-5<br>copilot: GPT-5 mini<br>opencode: opencode-go/deepseek-v4-flash | Genera mensaje Conventional Commits desde `git diff --cached`. Subject ≤50 chars, body solo cuando el *why* no es obvio. `git commit` con autorización explícita |
-| `/ai-pr` | claude: claude-haiku-4-5<br>copilot: GPT-5 mini<br>opencode: opencode-go/deepseek-v4-flash | Sintetiza título + body de PR desde spec/plan/review/security/performance/accessibility + git log. Guarda draft y abre PR vía `gh` con autorización explícita |
+| `/ai-commit` | - claude: claude-haiku-4-5<br>- copilot: GPT-5 mini<br>- opencode: opencode-go/deepseek-v4-flash | Genera mensaje Conventional Commits desde `git diff --cached`. Subject ≤50 chars, body solo cuando el *why* no es obvio. `git commit` con autorización explícita |
+| `/ai-pr` | - claude: claude-haiku-4-5<br>- copilot: GPT-5 mini<br>- opencode: opencode-go/deepseek-v4-flash | Sintetiza título + body de PR desde spec/plan/review/security/performance/accessibility + git log. Guarda draft y abre PR vía `gh` con autorización explícita |
 
 ## Triage en `ai-4-review`
 
