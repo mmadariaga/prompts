@@ -72,13 +72,13 @@ Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
 
 | OS | Destination |
 |----|---------|
-| Linux / macOS | `~/.config/opencode/command/` |
+| Linux / macOS | `~/.config/opencode/commands/` |
 | Windows | `%USERPROFILE%\.config\opencode\commands\` |
 
 **Linux / macOS:**
 ```bash
-mkdir -p ~/.config/opencode/command
-cp opencode/commands/*.md ~/.config/opencode/command/
+mkdir -p ~/.config/opencode/commands
+cp opencode/commands/*.md ~/.config/opencode/commands/
 ```
 
 **Windows (PowerShell):**
@@ -126,4 +126,5 @@ Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
 instructions/      ← actual content for each agent (plain markdown, Isolation Mode + TASK)
 claude/commands/   ← wrappers for Claude Code (model + effort + fetch to instructions/)
 opencode/commands/ ← wrappers for opencode (model + fetch to instructions/)
+github/prompts/    ← prompts for GitHub Copilot (model + fetch to instructions/)
 ```

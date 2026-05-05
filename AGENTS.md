@@ -103,6 +103,7 @@ plans/{feature-name}/
 1. Edit the file in `instructions/`.
 2. If the recommended model changes, update the wrappers in `claude/commands/` and `opencode/commands/`.
 3. Keep `github/prompts/` in sync if the change affects the base prompt.
+4. If the platform requires different fetch URLs (e.g. GitHub Copilot cannot reach a private repo), create `instructions/{name}.github.md` and point the GitHub prompt to it.
 
 ### Add a new command
 1. Create the instruction in `instructions/{name}.md` with Isolation Mode + TASK block.
