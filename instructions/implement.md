@@ -32,6 +32,25 @@
         3. Write the GREEN implementation.
         4. Run the GREEN verification command. If it does NOT pass, fix the implementation until it does.
     - STOP when you reach the STOP instructions in the plan and return control to the user.
+    - **Plan vs Final Implementation appendix:** After reaching STOP, update the `plan.md` file by appending a block with the exact heading `## Appendix: Plan vs Final Implementation` at the end of the document. Its purpose is to document every deviation between the original plan and the code that was actually merged. The block must follow this format:
+
+      ```markdown
+      ## Appendix: Plan vs Final Implementation
+
+      This section documents deviations between the original plan and the code that was actually merged.
+
+      ### 1. <Short title of the deviation>
+
+      **Plan:** <What the plan originally said or required>
+      **Final:** <What was actually implemented>
+      **Reason:** <Why the change was necessary>
+
+      ### 2. <Next deviation>
+
+      ...
+      ```
+
+      Document every deviation you encountered (e.g., methods that needed extra annotations, order-of-operations bugs discovered in the plan, tests removed because they were invalid, launcher changes, missing imports, etc.). Do not omit deviations just because they are small.
     </workflow>
 
     ## Git Operations
