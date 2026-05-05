@@ -73,7 +73,7 @@ Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
 | OS | Destination |
 |----|---------|
 | Linux / macOS | `~/.config/opencode/command/` |
-| Windows | `%APPDATA%\opencode\command\` |
+| Windows | `%USERPROFILE%\.config\opencode\commands\` |
 
 **Linux / macOS:**
 ```bash
@@ -83,11 +83,11 @@ cp opencode/commands/*.md ~/.config/opencode/command/
 
 **Windows (PowerShell):**
 ```powershell
-New-Item -ItemType Directory -Force -Path "$env:APPDATA\opencode\command"
-Copy-Item opencode\commands\*.md "$env:APPDATA\opencode\command\"
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode\commands"
+Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
 ```
 
-> Per-project commands are still possible via `.claude/commands/` or `.opencode/command/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
+> Per-project commands are still possible via `.claude/commands/` or `.opencode/commands/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
 
 ## Typical usage
 

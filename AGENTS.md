@@ -95,9 +95,9 @@ Only proposes creating an ADR/DDR if the project already has an ADR culture or t
 Commands are **user globals**, not per-project.
 
 - **Claude Code**: `~/.claude/commands/`
-- **opencode**: `~/.config/opencode/command/`
+- **opencode**: `~/.config/opencode/commands/`
 
-Project-local commands (`.claude/commands/` or `.opencode/command/` at repo root) override by name.
+Project-local commands (`.claude/commands/` or `.opencode/commands/` at repo root) override by name.
 
 ## Generated artifacts
 
