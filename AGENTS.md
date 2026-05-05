@@ -76,20 +76,6 @@ Only proposes creating an ADR/DDR if the project already has an ADR culture or t
 - Performance surface → `ai-6-performance`
 - Accessibility surface (`.tsx`/`.jsx`/`.astro`/`.html`/`.vue`/`.svelte`/`.css`) → `ai-7-accessibility`
 
-## Recommended models by phase
-
-| Phase | Opencode | Claude Code | Copilot |
-|-------|----------|-------------|---------|
-| spec (1) | `opencode/claude-opus-4-6` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| review (4) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| security (5) | `opencode/gpt-5.3-codex` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| performance (6) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| accessibility (7) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-
 ## Installation
 
 Commands are **user globals**, not per-project.

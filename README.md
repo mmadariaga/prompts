@@ -24,7 +24,7 @@ Each command is a thin wrapper that fetches its instructions from `instructions/
 | plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 | review (4) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| security (5) | `opencode/gpt-5.3-codex` | `claude-opus-4-7` High | Claude Opus 4.6 |
+| security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
 | performance (6) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | accessibility (7) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
