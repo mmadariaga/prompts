@@ -138,7 +138,7 @@
     - **Faithful to the diff.** Every claim in the body must be backed by a commit or file in `git log {parent}..HEAD` / `git diff {parent}...HEAD`.
     - **Omit empty sections.** Drop Design Decisions and Out of Scope if `spec.md` has nothing to populate them. Leave audit checkboxes unchecked when the audit artefact is absent.
     - **No "Generated with Claude Code" footer or co-author trailers** unless the user explicitly requests them.
-    - **Language:** Respond to the user in the same language they write in. Write the PR body in English — unless explicitly asked otherwise.
+    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). The PR body is written in English unless the user explicitly requests otherwise.
 
     ---
 

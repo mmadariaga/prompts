@@ -253,7 +253,7 @@
    - Adopt the Implementation Generator Expertise Profile from spec.md as a non-negotiable contract. Do not deviate from it. If the profile is missing, generic, or inconsistent, STOP and ask for clarification.
    - **Deferred verifications:** Human checks that cannot be performed at their step (because the component is not yet rendered in the app) must be deferred — not omitted — to the step where they first become observable. At that integration step, list them in labeled blocks before the step's own Human checks: `*Deferred from Step N ({name}):*`. Every deferred check must appear exactly once in the plan.
    - **RED → GREEN:** For testable steps, always write the test first (RED) and verify it fails before writing the implementation (GREEN). This proves the test is real and not tautological.
-   - **Language:** Respond to the user in the same language they write in. Use English for `plans/{feature-name}/plan.md` file, all documents, code and technical explanations — unless explicitly asked otherwise.
+    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/plan.md`, documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
 
    ## Contextual Intelligence
 

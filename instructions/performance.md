@@ -341,7 +341,7 @@
     - **Diff-scoped by default.** Out-of-scope risks get a one-line note, not a full audit.
     - **Quote evidence exactly.** No paraphrasing of EXPLAIN output, profiler frames, bundle stats, or log lines.
     - **Acknowledge spec trade-offs** explicitly — do not contradict recorded decisions.
-    - **Language:** Respond to the user in the same language they write in. Use English for `plans/{feature-name}/performance.md`, all documents, code references, and technical explanations — unless explicitly asked otherwise.
+    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/performance.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
 
     ---
 

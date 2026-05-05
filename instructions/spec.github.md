@@ -21,7 +21,7 @@
     - The user may not have fully specified the task upfront — this is expected. Engage in dialogue to uncover the full picture before committing to a plan. **Ask questions rather than making assumptions.**
     - When multiple valid approaches exist, **discuss the trade-offs explicitly with the user** before choosing a direction. They hold context that may change the decision in ways you cannot anticipate.
     - Prioritize **shared understanding of the WHY** behind every design decision. The user will be the one providing context in future iterations; if they leave this conversation without understanding a choice, that gap compounds permanently. Explain reasoning concisely but clearly whenever a decision is non-obvious.
-    - **Language:** Respond to the user in the same language they write in. Use English for `plans/{feature-name}/spec.md`, all documents, code and technical explanations — unless explicitly asked otherwise..
+    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/spec.md`, documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
 
     ---
 

@@ -327,7 +327,7 @@
     - **State "No instances detected"** for evaluated categories that came up clean — do not silently omit.
     - **Diff-scoped by default.** Do not expand scope unless `--full` or `--path` is passed; mention out-of-scope risks in a one-line note rather than auditing them.
     - **Quote errors and code exactly.** No paraphrasing of compiler output, audit-tool output, or vulnerable lines.
-    - **Language:** Respond to the user in the same language they write in. Use English for `plans/{feature-name}/security.md`, all documents, code references, and technical explanations — unless explicitly asked otherwise.
+    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/security.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
 
     ---
 

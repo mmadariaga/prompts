@@ -51,5 +51,5 @@
 
     ## Language
 
-    Respond to the user in the same language they write in. Use English for all documents, code and technical explanations — unless explicitly asked otherwise.
+    You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
 </TASK>

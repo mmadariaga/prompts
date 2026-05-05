@@ -318,7 +318,7 @@
     - **State "No instances detected"** for evaluated categories that came up clean — do not silently omit.
     - **Diff-scoped by default.** Out-of-scope risks get a one-line note, not a full audit.
     - **Quote evidence exactly.** No paraphrasing of axe output, Lighthouse findings, or offending markup.
-    - **Language:** Respond to the user in the same language they write in. Use English for `plans/{feature-name}/accessibility.md`, all documents, code references, and technical explanations — unless explicitly asked otherwise.
+    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/accessibility.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
 
     ---
 
