@@ -112,6 +112,20 @@ Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
 > - **Clean, replicable context** — each phase starts from scratch (Isolation Mode), making it easy to debug and replay steps in isolation.
 > - **Model isolation** — each phase uses the most cost-effective model for its task.
 
+## Iterate as needed
+
+After review and audits, start a new cycle from the existing artifacts:
+
+```
+/ai-1-spec Based on the specification we just implemented and the enhancements and bugs identified during review, create a new spec in plans/oauth2-auth-review-enhancements
+@plans/oauth2-auth/spec.md
+@plans/oauth2-auth/review.md
+@plans/oauth2-auth/security.md
+@plans/oauth2-auth/performance.md
+@plans/oauth2-auth/accessibility.md
+```
+
+
 ## Conventions
 
 - **Numbered (1→7)** = sequential pipeline. Expected order.
