@@ -4,6 +4,14 @@ Claude Code, GitHub Copilot and opencode commands for a structured development w
 
 Each command is a thin wrapper that fetches its instructions from `instructions/` in this repo and runs them in *Isolation Mode* (no inherited context from previous chats). Each phase produces an artifact in `plans/{feature-name}/` that feeds into the next.
 
+## Index
+
+- [Commands](#sequential-pipeline-numbered)
+- [Typical usage](#typical-usage)
+- [Project highlights](#project-highlights)
+- [Installation](#global-installation-multi-project)
+- [Model recommendation](#recommended-models-by-phase)
+
 ## Sequential pipeline (numbered)
 
 | Command | Input | Output | Purpose |
@@ -15,20 +23,6 @@ Each command is a thin wrapper that fetches its instructions from `instructions/
 | `/ai-5-security` | `spec.md` + diff | `plans/{f}/security.md` | SAST + SCA, CWE/CVE mapping, OWASP/PCI/GDPR. file:line + taint flow required |
 | `/ai-6-performance` | `spec.md` + diff | `plans/{f}/performance.md` | Audit by tier (backend / frontend / db / queue). Evidence-based, no speculation |
 | `/ai-7-accessibility` | `spec.md` + diff | `plans/{f}/accessibility.md` | Static WCAG 2.2 AA (+ optional axe/Lighthouse with `--runtime`) |
-
-### Recommended models by phase
-
-| Phase | Opencode | Claude Code | Copilot |
-|-------|----------|-------------|---------|
-| spec (1) | `opencode/claude-opus-4-6` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| review (4) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| performance (6) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| accessibility (7) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 
 ## On-demand commands (unnumbered)
 
@@ -44,6 +38,102 @@ Each command is a thin wrapper that fetches its instructions from `instructions/
 - **Security surface** (auth, input parsing, dynamic queries, crypto, HTTP boundary, deps, logging) → `/ai-5-security`
 - **Performance surface** (new queries, endpoints, consumers, hot components, deps, loops over unbounded input, caching) → `/ai-6-performance`
 - **Accessibility surface** (`.tsx`/`.jsx`/`.astro`/`.html`/`.vue`/`.svelte`/`.css`) → `/ai-7-accessibility`
+
+All audits are diff-scoped by default vs parent branch. Support `--full` or `--path {dir}` to expand scope.
+
+## Typical usage
+
+```
+/ai-1-spec Add OAuth2 authentication
+/ai-2-plan plans/oauth2-auth/spec.md
+/ai-3-implement plans/oauth2-auth/plan.md
+
+# git add ... && /ai-commit  (after each step / STOP & COMMIT in the plan)
+
+/ai-4-review plans/oauth2-auth/spec.md
+# If ai-4-review recommends audits:
+/ai-5-security plans/oauth2-auth/spec.md
+/ai-6-performance plans/oauth2-auth/spec.md
+/ai-7-accessibility plans/oauth2-auth/spec.md
+
+/ai-pr plans/oauth2-auth/spec.md
+```
+
+> **Important:** open a new chat between commands. Reasons:
+> - **Token savings** — each phase only inherits the artifact it needs, not the full history.
+> - **Clean, replicable context** — each phase starts from scratch (Isolation Mode), making it easy to debug and replay steps in isolation.
+> - **Model isolation** — each phase uses the most cost-effective model for its task.
+
+## Iterate as needed
+
+After review and audits, start a new cycle from the existing artifacts if required. Depending on the complexity of the issues found, choose the appropriate entry point:
+
+- **Full re-spec** — for major changes, new requirements, or architectural shifts:
+  ```
+  /ai-1-spec Based on the specification we just implemented and the enhancements and bugs identified during review, create a new spec in plans/oauth2-auth-review-enhancements
+  @plans/oauth2-auth/spec.md
+  @plans/oauth2-auth/review.md
+  @plans/oauth2-auth/security.md
+  @plans/oauth2-auth/performance.md
+  @plans/oauth2-auth/accessibility.md
+  ```
+
+- **Skip spec, re-plan only** — for contained fixes where the original specification is still valid. Keeps the spec unchanged and generates a fresh plan addressing the review findings:
+  ```
+  /ai-2-plan Based on the existing spec and the review findings below, create a new plan in plans/oauth2-auth-fixes
+  @plans/oauth2-auth/spec.md
+  @plans/oauth2-auth/review.md
+  ```
+
+## Project Highlights
+
+### Cost-Effective Strategies
+
+Every phase in this pipeline is optimized to minimize token consumption without sacrificing quality:
+
+#### Caveman Communication Mode
+Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred over full sentences. Flag `--full-caveman` in `$ARGUMENTS` activates full mode (even more aggressive abbreviation). Implemented via `instructions/caveman.md` included in every instruction file.
+
+#### Internal English, Public Localization
+All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat and all generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) respect the user's language.
+
+#### Task-Matched Model Selection
+Each phase uses a model chosen for its specific strengths: reasoning-heavy phases (spec, security) use frontier models; planning and review use balanced mid-range models; implementation, commit, and PR use fast, cost-efficient models. See the [Recommended models by phase](#recommended-models-by-phase) table above.
+
+### Proven Strategies
+
+#### Spec First
+Every feature starts with a specification (`spec.md`) that captures goals, acceptance criteria, technical constraints, and design decisions. The plan (`plan.md`) is derived from the spec, and implementation follows the plan. This is [Spec-Driven Development](https://scrummanager.com/community/spec-driven-development-qu-es-de-dnde-viene-y-por-qu-importa) at the *spec-first* level —the spec drives the current task and is kept as a living artifact for the pipeline phases that follow (review, security, performance, accessibility). No *vibe coding*: every line of generated code is grounded in an explicit contract.
+
+#### Isolation Mode
+Every command starts with zero inherited context —it reads only the `<TASK>` block and the artifacts it needs. This prevents context pollution across phases, makes each run replicable, and enables safe model switching between phases.
+
+#### RED → GREEN
+Each testable step includes a failing test (RED) before the minimal implementation (GREEN). The agent runs RED first, confirms the failure is a valid assertion failure (not a setup error), then writes GREEN and verifies it passes. This proves the test is real and not tautological.
+
+#### Ubiquitous Language via GLOSSARY.md
+Domain terms are captured in a living `GLOSSARY.md` at the project root. Spec reads and appends new terms inline (no batching), Plan uses canonical terms for all new identifiers, and Review validates language consistency in the diff. This enforces a DDD-style ubiquitous language across the entire pipeline —every agent and every artifact speaks the same vocabulary.
+
+#### Single Responsibility Per Phase
+Each phase produces exactly one artifact. Only `ai-3-implement` writes code; spec, plan, review, and audits produce only markdown in `plans/{feature-name}/`. No phase oversteps its scope, and every instruction file ends with a "Scope Reminder" block to enforce this.
+
+#### Open New Chat Between Commands
+The pipeline mandates a fresh chat between phases. This saves tokens (no accumulated history), keeps context clean and debuggable, and allows each phase to use the most cost-effective model for its task.
+
+#### Multi-Pass Review (9 categories)
+The review agent runs nine distinct passes across the full diff: Domain Alignment, Correctness & Bugs, Security triage, Performance triage, Maintainability, Testing, Codebase Consistency, Domain Language Consistency, and Documentation & Migrations.
+
+#### Deferred Verification
+Human checks (browser/UI behavior, visual confirmation) are deferred to the integration step where the behavior is first observable —the plan asks the user to verify parts of the feature as early as possible, not all at the end. Every deferred check appears exactly once, labeled with its origin step.
+
+## Repo structure
+
+```
+instructions/      ← actual content for each agent (plain markdown, Isolation Mode + TASK)
+claude/commands/   ← wrappers for Claude Code (model + effort + fetch to instructions/)
+opencode/commands/ ← wrappers for opencode (model + fetch to instructions/)
+github/prompts/    ← prompts for GitHub Copilot (model + fetch to instructions/)
+```
 
 ## Global installation (multi-project)
 
@@ -89,56 +179,16 @@ Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
 
 > Per-project commands are still possible via `.claude/commands/` or `.opencode/commands/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
 
-## Typical usage
+### Recommended models by phase
 
-```
-/ai-1-spec Add OAuth2 authentication
-/ai-2-plan plans/oauth2-auth/spec.md
-/ai-3-implement plans/oauth2-auth/plan.md
-
-# git add ... && /ai-commit  (after each step / STOP & COMMIT in the plan)
-
-/ai-4-review plans/oauth2-auth/spec.md
-# If ai-4-review recommends audits:
-/ai-5-security plans/oauth2-auth/spec.md
-/ai-6-performance plans/oauth2-auth/spec.md
-/ai-7-accessibility plans/oauth2-auth/spec.md
-
-/ai-pr plans/oauth2-auth/spec.md
-```
-
-> **Important:** open a new chat between commands. Reasons:
-> - **Token savings** — each phase only inherits the artifact it needs, not the full history.
-> - **Clean, replicable context** — each phase starts from scratch (Isolation Mode), making it easy to debug and replay steps in isolation.
-> - **Model isolation** — each phase uses the most cost-effective model for its task.
-
-## Iterate as needed
-
-After review and audits, start a new cycle from the existing artifacts:
-
-```
-/ai-1-spec Based on the specification we just implemented and the enhancements and bugs identified during review, create a new spec in plans/oauth2-auth-review-enhancements
-@plans/oauth2-auth/spec.md
-@plans/oauth2-auth/review.md
-@plans/oauth2-auth/security.md
-@plans/oauth2-auth/performance.md
-@plans/oauth2-auth/accessibility.md
-```
-
-
-## Conventions
-
-- **Numbered (1→7)** = sequential pipeline. Expected order.
-- **Unnumbered** (`ai-pr`, `ai-commit`) = run at variable position.
-- All audits (5, 6, 7) require `spec.md` and respect explicitly accepted trade-offs (marked as *Acknowledged*, not as findings).
-- All audits are diff-scoped by default vs parent branch. Support `--full` or `--path {dir}` to expand scope.
-- No audit modifies code. Writes only to `plans/{feature-name}/`.
-
-## Repo structure
-
-```
-instructions/      ← actual content for each agent (plain markdown, Isolation Mode + TASK)
-claude/commands/   ← wrappers for Claude Code (model + effort + fetch to instructions/)
-opencode/commands/ ← wrappers for opencode (model + fetch to instructions/)
-github/prompts/    ← prompts for GitHub Copilot (model + fetch to instructions/)
-```
+| Phase | Opencode | Claude Code | Copilot |
+|-------|----------|-------------|---------|
+| spec (1) | `opencode/claude-opus-4-6` | `claude-opus-4-7` High | Claude Opus 4.6 |
+| plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
+| review (4) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
+| performance (6) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| accessibility (7) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
+| pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
