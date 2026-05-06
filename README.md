@@ -49,6 +49,25 @@ Each command is a thin wrapper that fetches its instructions from `instructions/
 
 Commands are designed as **user globals**, not per project. A single copy in the CLI's global directory makes them available in any repo.
 
+### Opencode
+
+| OS | Destination |
+|----|---------|
+| Linux / macOS | `~/.config/opencode/commands/` |
+| Windows | `%USERPROFILE%\.config\opencode\commands\` |
+
+**Linux / macOS:**
+```bash
+mkdir -p ~/.config/opencode/commands
+cp opencode/commands/*.md ~/.config/opencode/commands/
+```
+
+**Windows (PowerShell):**
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode\commands"
+Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
+```
+
 ### Claude Code
 
 | OS | Destination |
@@ -66,25 +85,6 @@ cp claude/commands/*.md ~/.claude/commands/
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\commands"
 Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
-```
-
-### opencode
-
-| OS | Destination |
-|----|---------|
-| Linux / macOS | `~/.config/opencode/commands/` |
-| Windows | `%USERPROFILE%\.config\opencode\commands\` |
-
-**Linux / macOS:**
-```bash
-mkdir -p ~/.config/opencode/commands
-cp opencode/commands/*.md ~/.config/opencode/commands/
-```
-
-**Windows (PowerShell):**
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode\commands"
-Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
 ```
 
 > Per-project commands are still possible via `.claude/commands/` or `.opencode/commands/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
