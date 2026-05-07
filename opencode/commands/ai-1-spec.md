@@ -4,3 +4,5 @@ model: opencode/claude-opus-4-6
 ---
 
 Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/spec.md and follow those instructions exactly. Feature request: $ARGUMENTS
+
+Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md

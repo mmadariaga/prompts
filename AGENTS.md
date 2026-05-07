@@ -11,18 +11,19 @@ It contains no application code. It is prompt infrastructure installed as global
 ```
 spec(1) → plan(2) → implement(3) → review(4) → [security(5) | performance(6) | accessibility(7)]
                                     ↓
-                              commit / pr (on-demand)
+                            commit / pr (on-demand)
 ```
 
-Each phase produces an artifact in `plans/{feature-name}/` that feeds the next. Runs in **Isolation Mode**: every command starts with no inherited context, reading only the artifact it needs.
+Each phase produces an artifact in `plans/{feature-name}/` that feeds the next. `ai-commit` and `ai-pr` are on-demand commands. Runs in **Isolation Mode**: every command starts with no inherited context, reading only the artifact it needs.
 
 ## Repository structure
 
 | Directory | Purpose |
 |-----------|---------|
-| `instructions/` | Actual content for each phase. Plain markdown with Isolation Mode + TASK block. Fetched by wrappers. |
+| `instructions/` | Actual content for each phase. Plain markdown with Isolation Mode + TASK block. Fetched by wrappers. Platform-specific variants (e.g. `spec.claude.md`, `spec.github.md`) exist when platforms need different content. |
 | `claude/commands/` | Wrappers for Claude Code. YAML frontmatter (`description`, `argument-hint`, `model`, `effort`) + fetch to `instructions/`. |
 | `opencode/commands/` | Wrappers for opencode. YAML frontmatter (`description`, `model`) + fetch to `instructions/`. |
+| `opencode/opencode.jsonc` | Sub-agent explore configuration (mode + trusted low-cost model). |
 | `github/prompts/` | Prompts for GitHub Copilot. Equivalent to the commands above. |
 
 Wrappers are **thin** — they only specify the model and fetch the markdown from `instructions/`. The logic lives in `instructions/`.
@@ -64,10 +65,10 @@ Integrated in `plan.md` and `implement.md`:
 Not pure TDD; it is test quality verification.
 
 ### ADR/DDR Proposal Check
-In `plan.md` Step 1.5. Evaluates 3 criteria before generating the plan:
-1. Does it affect >2 teams or systems?
-2. Is it hard to revert once deployed?
-3. Does it introduce a new critical dependency or change a public contract?
+In `plan.md`. Evaluates 3 criteria before generating the plan:
+1. **Hard to reverse** — the cost of changing later is meaningful.
+2. **Surprising without context** — a future reader would wonder "why did they do it this way?"
+3. **Real trade-off** — genuine alternatives existed and one was chosen for specific reasons.
 Only proposes creating an ADR/DDR if the project already has an ADR culture or the user approves.
 
 ### Triage in review
@@ -114,4 +115,4 @@ plans/{feature-name}/
 ### Format conventions
 - Never use `any` in TypeScript (even though there is no TS here, it applies to code examples in instructions).
 - Generated artifacts (`spec.md`, `plan.md`, etc.) are in English unless the user explicitly requests otherwise.
-- Fetch URLs point to `https://github.com/mmadariaga/prompts/blob/main/instructions/...` (`experimental` branch).
+- Fetch URLs point to `https://github.com/mmadariaga/prompts/blob/main/instructions/...` (`main` branch).

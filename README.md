@@ -126,6 +126,12 @@ The review agent runs nine distinct passes across the full diff: Domain Alignmen
 #### Deferred Verification
 Human checks (browser/UI behavior, visual confirmation) are deferred to the integration step where the behavior is first observable —the plan asks the user to verify parts of the feature as early as possible, not all at the end. Every deferred check appears exactly once, labeled with its origin step.
 
+#### ADR/DDR Proposals
+Proposes creating an ADR/DDR if all 3 criteria below are met:
+1. **Hard to reverse** — the cost of changing later is meaningful.
+2. **Surprising without context** — a future reader would wonder "why did they do it this way?"
+3. **Real trade-off** — genuine alternatives existed and one was chosen for specific reasons.
+
 ## Repo structure
 
 ```

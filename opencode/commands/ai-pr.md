@@ -4,3 +4,5 @@ model: opencode-go/deepseek-v4-flash
 ---
 
 Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/pr.md and follow those instructions exactly. $ARGUMENTS
+
+Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md
