@@ -95,7 +95,10 @@ Every phase in this pipeline is optimized to minimize token consumption without 
 Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred over full sentences. Flag `--full-caveman` in `$ARGUMENTS` activates full mode (even more aggressive abbreviation). Implemented via `instructions/caveman.md` included in every instruction file.
 
 #### Token-Efficient Languages
+
 All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat always responds in the user's own language (Spanish, French, German, etc.). All generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) are written in English.
+
+Chinese models are often even more token-efficient when reasoning in Chinese. For workloads running on Chinese-origin models, you can activate **Chinese thinking** by adding `--tacaño` or `--stingy` to the prompt. When this flag is present, the agent switches its internal reasoning to Chinese while continuing to produce all artifacts and user-facing responses in English (or the user's language). [Reference](https://x.com/arankomatsuzaki/status/2049177688402022730)
 
 #### Task-Matched Model Selection
 Each phase uses a model chosen for its specific strengths: reasoning-heavy phases (spec, security) use frontier models; planning and review use balanced mid-range models; implementation, commit, and PR use fast, cost-efficient models. See the [Recommended models by phase](#recommended-models-by-phase) table above.
