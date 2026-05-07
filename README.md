@@ -148,17 +148,48 @@ Commands are designed as **user globals**, not per project. A single copy in the
 
 **Linux / macOS:**
 ```bash
+# Copy commands
 mkdir -p ~/.config/opencode/commands
 cp opencode/commands/*.md ~/.config/opencode/commands/
-[ -f ~/.config/opencode/opencode.jsonc ] || cp opencode/opencode.jsonc ~/.config/opencode/
+
+# Copy opencode.json
+if [ ! -f ~/.config/opencode/opencode.json ] && [ ! -f ~/.config/opencode/opencode.jsonc ]; then
+    cp opencode/opencode.jsonc ~/.config/opencode/
+else
+    echo "~/.config/opencode/opencode.json(c) already exists."
+    echo "Ensure it includes the 'agent.explore' section:"
+    echo '  "agent": {'
+    echo '    "explore": {'
+    echo '      "mode": "subagent",'
+    echo '      // Set your trusted low-cost model below'
+    echo '      "model": "opencode-go/deepseek-v4-flash"'
+    echo '    }'
+    echo '  }'
+fi
 ```
 
 **Windows (PowerShell):**
 ```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode\commands"
-Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
-if (-not (Test-Path "$env:USERPROFILE\.config\opencode\opencode.jsonc")) {
-    Copy-Item opencode\opencode.jsonc "$env:USERPROFILE\.config\opencode\"
+# Copy commands
+$configDir = "$env:USERPROFILE\.config\opencode"
+New-Item -ItemType Directory -Force -Path "$configDir\commands"
+Copy-Item opencode\commands\*.md "$configDir\commands\"
+
+# Copy opencode.json
+$jsonPath = Join-Path $configDir "opencode.json"
+$jsoncPath = Join-Path $configDir "opencode.jsonc"
+if (-not (Test-Path $jsonPath) -and -not (Test-Path $jsoncPath)) {
+    Copy-Item opencode\opencode.jsonc $configDir\
+} else {
+    Write-Host "$configDir\opencode.json(c) already exists."
+    Write-Host "Ensure it includes the 'agent.explore' section:"
+    Write-Host '  "agent": {'
+    Write-Host '    "explore": {'
+    Write-Host '      "mode": "subagent",'
+    Write-Host '      // Set your trusted low-cost model below'
+    Write-Host '      "model": "opencode-go/deepseek-v4-flash"'
+    Write-Host '    }'
+    Write-Host '  }'
 }
 ```
 
