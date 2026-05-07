@@ -94,8 +94,8 @@ Every phase in this pipeline is optimized to minimize token consumption without 
 #### Caveman Communication Mode
 Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred over full sentences. Flag `--full-caveman` in `$ARGUMENTS` activates full mode (even more aggressive abbreviation). Implemented via `instructions/caveman.md` included in every instruction file.
 
-#### Internal English, Public Localization
-All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat and all generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) respect the user's language.
+#### Token-Efficient Languages
+All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat always responds in the user's own language (Spanish, French, German, etc.). All generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) are written in English.
 
 #### Task-Matched Model Selection
 Each phase uses a model chosen for its specific strengths: reasoning-heavy phases (spec, security) use frontier models; planning and review use balanced mid-range models; implementation, commit, and PR use fast, cost-efficient models. See the [Recommended models by phase](#recommended-models-by-phase) table above.
@@ -117,8 +117,8 @@ Domain terms are captured in a living `GLOSSARY.md` at the project root. Spec re
 #### Single Responsibility Per Phase
 Each phase produces exactly one artifact. Only `ai-3-implement` writes code; spec, plan, review, and audits produce only markdown in `plans/{feature-name}/`. No phase oversteps its scope, and every instruction file ends with a "Scope Reminder" block to enforce this.
 
-#### Open New Chat Between Commands
-The pipeline mandates a fresh chat between phases. This saves tokens (no accumulated history), keeps context clean and debuggable, and allows each phase to use the most cost-effective model for its task.
+#### Sub-Agent Exploration
+Complex or exploratory tasks are delegated to sub-agents running cost-effective models matched to the subtask complexity. By default, sub-agents do not inherit the main session's token window, preventing context pollution and keeping costs predictable.
 
 #### Multi-Pass Review (9 categories)
 The review agent runs nine distinct passes across the full diff: Domain Alignment, Correctness & Bugs, Security triage, Performance triage, Maintainability, Testing, Codebase Consistency, Domain Language Consistency, and Documentation & Migrations.
@@ -150,12 +150,16 @@ Commands are designed as **user globals**, not per project. A single copy in the
 ```bash
 mkdir -p ~/.config/opencode/commands
 cp opencode/commands/*.md ~/.config/opencode/commands/
+[ -f ~/.config/opencode/opencode.jsonc ] || cp opencode/opencode.jsonc ~/.config/opencode/
 ```
 
 **Windows (PowerShell):**
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode\commands"
 Copy-Item opencode\commands\*.md "$env:USERPROFILE\.config\opencode\commands\"
+if (-not (Test-Path "$env:USERPROFILE\.config\opencode\opencode.jsonc")) {
+    Copy-Item opencode\opencode.jsonc "$env:USERPROFILE\.config\opencode\"
+}
 ```
 
 ### Claude Code

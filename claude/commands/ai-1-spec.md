@@ -5,4 +5,4 @@ model: claude-opus-4-7
 effort: high
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/spec.md and follow those instructions exactly. Feature request: $ARGUMENTS
+Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/spec.claude.md and follow those instructions exactly. Feature request: $ARGUMENTS
