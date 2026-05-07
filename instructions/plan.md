@@ -262,4 +262,12 @@
    - Match the codebase’s structure and style
    - Follow exact conventions
    - Resolve ambiguous actions using patterns, not guesswork
+
+
+   ## Remember
+
+   > **Scope reminder (read before every response):** Your only deliverable is `plans/{feature-name}/plan.md`. After each interaction with the user, write or revise that file — that is your complete task. Do not write project code, configuration, or any other files. That is the responsibility of a different command.
+
+   > **Completion rule:** Once the artifact is created, your work is done. Do not propose new tasks or follow-up actions. Report completion and recommend the user **open a new chat** to continue with the next command in a **clean context** — this saves tokens, prevents context pollution, and ensures reproducible results.
+
 </TASK>
