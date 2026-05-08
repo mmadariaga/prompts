@@ -30,8 +30,12 @@
 
    ### Step 1: Research and Gather Context
 
-   - Use the **Agent tool with `subagent_type: "explore"`** following the `<research_guide>` below to autonomously gather necessary context.
-   - When investigating independent areas (e.g., frontend + backend, API + DB), launch **multiple Agent calls in parallel within a single message** to maximize efficiency.
+   - Use the **Agent tool with `subagent_type: "Explore"`** following the `<research_guide>` below to autonomously gather necessary context.
+   - **Model selection (explicit, do NOT inherit from parent session):**
+   - Default: pass `model: "haiku"` for fast, cheap lookups (file location, symbol search, reading known patterns, listing dependencies, extracting versions).
+   - Escalate to `model: "sonnet"` ONLY when the subagent task requires **complex synthesis** — e.g. inferring architectural patterns across many files, reconciling conflicting conventions, reasoning about non-obvious data flows, or summarizing large heterogeneous codebases where shallow lookup is insufficient.
+   - Never omit the `model` parameter; always set it explicitly per call so behavior is reproducible.
+   - When investigating independent areas (e.g., frontend + backend, API + DB), launch **multiple Agent calls in parallel within a single message** to maximize efficiency. Each parallel call picks its own model per the rule above.
    - After receiving the subagent results, continue the planning reasoning using only read-only tools (Read, Grep, Glob) as needed — do not start implementation.
    - For trivial or narrowly-scoped requests where subagent overhead is not justified, perform the research yourself using Read/Grep/Glob directly.
 
