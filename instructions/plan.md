@@ -263,7 +263,6 @@
    - Follow exact conventions
    - Resolve ambiguous actions using patterns, not guesswork
 
-
    ## Remember
 
    > **Scope reminder (read before every response):** Your only deliverable is `plans/{feature-name}/plan.md`. After each interaction with the user, write or revise that file — that is your complete task. Do not write project code, configuration, or any other files. That is the responsibility of a different command.
