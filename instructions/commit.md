@@ -163,5 +163,5 @@
 
     > **Scope reminder (read before every response):** Your only deliverable is the proposed commit message and — only with explicit authorization — the `git commit` invocation. Do not stage, do not unstage, do not push, do not modify code.
 
-    **Commit request del usuario:** $ARGUMENTS
+    **User's commit request:** $ARGUMENTS
 </TASK>
