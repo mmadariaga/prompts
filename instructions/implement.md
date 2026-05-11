@@ -16,11 +16,11 @@
 
    Follow the workflow below to ensure accurate and focused implementation.
 
-   It is not necessary to load any skill to perform this task.
+   No skills are required by default. Load a skill only if the plan invokes it explicitly.
 
     <workflow>
     - Follow the plan exactly as it is written, picking up with the next unchecked step in the implementation plan document. You MUST NOT skip any steps.
-    - Implement ONLY what is specified in the implementation plan. DO NOT WRITE ANY CODE OUTSIDE OF WHAT IS SPECIFIED IN THE PLAN.
+    - Implement ONLY what is specified in the implementation plan. DO NOT WRITE ANY CODE OUTSIDE OF WHAT IS SPECIFIED IN THE PLAN. Exception: minimal stubs required to make a RED test fail by assertion (per the RED → GREEN handling rules below) are permitted; they are part of the test scaffolding, not new feature code.
     - Before modifying any file, read its current content. Never assume the current state of a file — verify its contents before applying changes from the plan.
     - Complete every item in the current Step. When ANY checkbox item is completed, you MUST immediately mark it `[x]` in the plan document before continuing. Do not batch updates.
     - Run every verification command in the Step's Verification Checklist before marking the step complete.
@@ -33,30 +33,34 @@
         3. Write the GREEN implementation.
         4. Run the GREEN verification command. If it does NOT pass, fix the implementation until it does.
     - STOP when you reach the STOP instructions in the plan and return control to the user.
-    - **Plan vs Final Implementation appendix:** After reaching STOP, update the `plan.md` file by appending a block with the exact heading `## Appendix: Plan vs Final Implementation` at the end of the document. Its purpose is to document every deviation between the original plan and the code that was actually merged. The block must follow this format:
+    - **Plan vs Final Implementation appendix (incremental):** Each time you reach a STOP & COMMIT in the plan, append your deviation entries for the just-completed step to a `## Appendix: Plan vs Final Implementation` section at the end of `plan.md`. Create the section on the first deviation; on subsequent steps, append new entries below the existing ones. This MUST happen before you commit, so the appendix entry lands in the same commit as the changes it describes. The block format:
 
       ```markdown
       ## Appendix: Plan vs Final Implementation
 
       This section documents deviations between the original plan and the code that was actually merged.
 
-      ### 1. <Short title of the deviation>
+      ### Step N — <Short title of the deviation>
 
       **Plan:** <What the plan originally said or required>
       **Final:** <What was actually implemented>
       **Reason:** <Why the change was necessary>
 
-      ### 2. <Next deviation>
+      ### Step N — <Next deviation in the same step>
 
       ...
       ```
 
-      Document every deviation you encountered (e.g., methods that needed extra annotations, order-of-operations bugs discovered in the plan, tests removed because they were invalid, launcher changes, missing imports, etc.). Do not omit deviations just because they are small.
+      Document every deviation you encountered (e.g., methods that needed extra annotations, order-of-operations bugs discovered in the plan, tests removed because they were invalid, launcher changes, missing imports, etc.). Do not omit deviations just because they are small. If a step had zero deviations, do NOT add an empty entry — skip it.
     </workflow>
 
    ## Git Operations
 
    **CRITICAL:** Do not manage git branches or create commits without explicit user authorization.
+   The plan's `STOP & COMMIT` markers signal that the step is ready to commit, but they are NOT
+   blanket authorization. You still propose the commit message and wait for user approval before
+   running `git commit`. Branch creation/switching always requires explicit approval regardless
+   of plan markers.
 
    - **Ask before any git operation**: Before creating branches, commits, pushing, or any other git action, ask the user for explicit permission.
    - **No implicit authorization**: Do not assume permission from previous sessions or tasks. Ask every time.
@@ -64,14 +68,16 @@
    - **Operations requiring permission**: Branch creation/switching, commits, push, rebase, merge, tag operations, or any destructive git action.
 
    Example workflow:
-   1. Implement code changes
-   2. "Ready to commit changes. May I create commit with message: '...'?" → Wait for approval
-   3. If yes → Create commit, update plan
-   4. If no → "Describe the changes above; execute commit yourself" 
+   1. Implement code changes for the current step
+   2. Run all Automated checks; mark `[x]` in the plan
+   3. Append the deviation entry (if any) to the plan's appendix
+   4. "Ready to commit Step N. May I create commit with message: '...'?" → Wait for approval
+   5. If yes → Create commit
+   6. If no → "Describe the changes above; execute commit yourself"
 
    ## Remember
 
-   > You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
+   > You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
 
    > **Completion rule:** Once your work is done, do not propose new tasks or follow-up actions. Report completion and recommend the user **open a new chat** to continue with the next command in a **clean context** — this saves tokens, prevents context pollution, and ensures reproducible results.
 

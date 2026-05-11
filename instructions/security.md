@@ -24,7 +24,11 @@
    2. **Scope** (optional, default = diff vs parent branch):
         - `--full` → scan the whole repository
         - `--path {dir}` → scan a specific path
-        - Otherwise: diff vs parent branch (auto-inferred — feature branch parent, else `master`/`main`). State the inferred parent branch before proceeding.
+        - Otherwise: diff vs parent branch. Detection order:
+            - If user provided, use it.
+            - Else read repo default from `git symbolic-ref --short refs/remotes/origin/HEAD` (strip `origin/` prefix).
+            - If unset, try `master`, then `main` — verify each with `git rev-parse --verify <branch>`.
+            - State the inferred parent branch explicitly to the user before proceeding.
 
    If `spec.md` is missing, respond with: **"spec.md is required to perform a domain-aware security audit. Please attach `plans/{feature-name}/spec.md`."** and STOP.
 
@@ -39,18 +43,20 @@
 
    ## Scan Phases
 
+   **Subagent reference:** When this document says "research subagent", invoke the cheap research subagent your harness exposes — `explore` in opencode, `Explore` in Claude Code, the pre-defined explorer custom agent in GitHub Copilot. Never route lookup work to the general/frontier-tier subagent.
+
    ### Phase 1: Discovery & Module Mapping
 
-   1. **Determine scope** (see Required Inputs). For diff mode:
-        - Files: `git diff --name-status {parent-branch}...HEAD`
-        - Hunks: `git diff {parent-branch}...HEAD -- {file}` per file
-   2. **Detect language ecosystem(s)** from extensions and manifests (`package.json`, `pom.xml`, `*.csproj`, `requirements.txt`, `pyproject.toml`, `go.mod`, `Gemfile`, `Cargo.toml`).
-   3. **Map modules** — group changed files into deployment/compilation units.
-   4. **Identify entry points & trust boundaries** in scope: API controllers, CLI entrypoints, message consumers, event/Lambda handlers, authn/authz layers, internal vs external surfaces.
-   5. **Check dependency manifests** — note whether any manifest (`pom.xml`, `package.json`, etc.) was introduced or modified in the diff. If **none** changed, skip Phase 3 entirely.
-   6. **Read `spec.md`** to record any explicitly accepted security trade-offs — these become *Acknowledged*, not findings.
+   1. **Read `spec.md`** first to record explicitly accepted security trade-offs — these become *Acknowledged*, not findings. Anchors all later phases.
+   2. **Determine scope** (see Required Inputs). For diff mode:
+        - File list: `git diff --name-status {parent-branch}...HEAD`
+        - Unified diff: `git diff {parent-branch}...HEAD` (single call). If diff exceeds 500 LOC, delegate per-file inspection to research subagents with output contract (file:line + flaw category + ≤80 words).
+   3. **Detect language ecosystem(s)** from extensions and manifests (`package.json`, `pom.xml`, `*.csproj`, `requirements.txt`, `pyproject.toml`, `go.mod`, `Gemfile`, `Cargo.toml`).
+   4. **Map modules** — group changed files into deployment/compilation units.
+   5. **Identify entry points & trust boundaries within diff scope ONLY**: API controllers, CLI entrypoints, message consumers, event/Lambda handlers, authn/authz layers introduced or modified in the diff. Do NOT scan unmodified files searching for boundaries.
+   6. **Check dependency manifests** — note whether any manifest (`pom.xml`, `package.json`, etc.) was introduced or modified in the diff. If **none** changed, skip Phase 3 entirely.
 
-   Use **Agent tool with `subagent_type: "Explore"`** in parallel when independent areas need codebase context (e.g. tracing how a tainted source flows through helpers in unchanged files).
+   Use the **research subagent** in parallel when independent areas need codebase context (e.g. tracing how a tainted source flows through helpers in unchanged files). Each research-subagent call MUST declare an output contract: exact fields (file:line + 1-line note), max-words cap (≤200), no raw code blocks returned to main. Cap total research-subagent invocations at ≤8 per audit.
 
    ### Phase 2: SAST — Static Analysis
 
@@ -303,7 +309,7 @@
    - **No exhaustive "No instances detected" lists.** If a category came up clean, do not list it. A single sentence in the Executive Summary (e.g. "No injection, crypto, or traversal flaws detected in scope") is sufficient.
    - **Quote errors and code exactly.** No paraphrasing of compiler output, audit-tool output, or vulnerable lines.
    - **Be concise.** For a typical diff, the final report must be legible in fewer than 200 lines. Skip sections entirely if they do not apply (e.g. SCA, Acknowledged Trade-offs) rather than filling them with "N/A" or empty tables.
-   - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts are written in English unless the user explicitly requests otherwise.
+   - **Language:** You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts are written in English unless the user explicitly requests otherwise.
 
    ## Self-Critique Before Saving
 

@@ -24,7 +24,11 @@
    2. **Scope** (optional, default = diff vs parent branch):
        - `--full` → audit the whole repository
        - `--path {dir}` → audit a specific path
-       - Otherwise: diff vs parent branch (auto-inferred — feature branch parent, else `master`/`main`). State the inferred parent branch before proceeding.
+       - Otherwise: diff vs parent branch. Detection order:
+           - If user provided, use it.
+           - Else read repo default from `git symbolic-ref --short refs/remotes/origin/HEAD` (strip `origin/` prefix).
+           - If unset, try `master`, then `main` — verify each with `git rev-parse --verify <branch>`.
+           - State the inferred parent branch explicitly to the user before proceeding.
    3. **Tier filter** (optional): `--tier backend|frontend|db|queue` to scope to a single tier. Default: all detected tiers.
 
    If `spec.md` is missing, respond with: **"spec.md is required to perform a domain-aware performance audit. Please attach `plans/{feature-name}/spec.md`."** and STOP.
@@ -50,25 +54,27 @@
 
    ## Audit Phases
 
+   **Subagent reference:** When this document says "research subagent", invoke the cheap research subagent your harness exposes — `explore` in opencode, `Explore` in Claude Code, the pre-defined explorer custom agent in GitHub Copilot. Never route lookup work to the general/frontier-tier subagent.
+
    ### Phase 1: Discovery & Stack Mapping
 
-   1. **Determine scope** (see Required Inputs). For diff mode:
-       - `git diff --name-status {parent-branch}...HEAD`
-       - `git diff {parent-branch}...HEAD -- {file}` per file
-   2. **Detect stack components in scope:**
+   1. **Read `spec.md`** first and record explicitly accepted performance trade-offs as *Acknowledged*. Anchors all later phases.
+   2. **Determine scope** (see Required Inputs). For diff mode:
+       - File list: `git diff --name-status {parent-branch}...HEAD`
+       - Unified diff: `git diff {parent-branch}...HEAD` (single call). If diff exceeds 500 LOC, delegate per-file inspection to research subagents with output contract (file:line + tier + finding category + ≤80 words).
+   3. **Detect stack components in scope:**
        - Backend: `pom.xml`, `build.gradle`, `pyproject.toml`, `requirements.txt`, `go.mod`, framework markers (Spring, Django, FastAPI, Express, NestJS).
        - Frontend: `package.json`, build tool (Vite, Webpack, Astro, Next), framework (React, Astro), bundler config.
        - Database: ORM markers (JPA/Hibernate, Django ORM, SQLAlchemy, Prisma), migration files, schema definitions, raw SQL.
        - Queue: client libs (RabbitMQ `amqp`, Kafka, AWS SQS, Redis Streams, BullMQ, Celery, Spring `@RabbitListener`/`@KafkaListener`).
-   3. **Identify hot paths in scope:**
+   4. **Identify hot paths in scope:**
        - HTTP endpoints touched (controllers, routes, handlers)
        - Background jobs / consumers touched
        - DB queries added or modified (search for query builders, raw SQL, repository methods)
        - Frontend routes / components in critical render paths
-   4. **Read `spec.md`** and record explicitly accepted performance trade-offs as *Acknowledged*.
    5. **Identify baseline reference** if available: prior benchmark, SLO, p95 from observability dashboards mentioned in repo docs. If none exists, state "No baseline — findings use absolute thresholds."
 
-   Use **Agent tool with `subagent_type: "Explore"`** in parallel when independent tiers need codebase context.
+   Use the **research subagent** in parallel when independent tiers need codebase context. Each research-subagent call MUST declare an output contract: exact fields (file:line + tier + 1-line note), max-words cap (≤200), no raw code blocks returned to main. Cap total research-subagent invocations at ≤8 per audit.
 
    ### Phase 2: Backend Audit
 
@@ -328,7 +334,7 @@
    - **Diff-scoped by default.** Out-of-scope risks get a one-line note, not a full audit.
    - **Quote evidence exactly.** No paraphrasing of EXPLAIN output, profiler frames, bundle stats, or log lines.
    - **Acknowledge spec trade-offs** explicitly — do not contradict recorded decisions.
-   - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/performance.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
+   - **Language:** You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/performance.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
 
    ## Self-Critique Before Saving
 

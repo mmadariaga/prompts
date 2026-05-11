@@ -20,10 +20,13 @@ Each phase produces an artifact in `plans/{feature-name}/` that feeds the next. 
 
 | Directory | Purpose |
 |-----------|---------|
-| `instructions/` | Actual content for each phase. Plain markdown with Isolation Mode + TASK block. Fetched by wrappers. Platform-specific variants (e.g. `spec.claude.md`, `spec.github.md`) exist when platforms need different content. |
+| `instructions/` | Actual content for each phase. Plain markdown with Isolation Mode + TASK block. Fetched by wrappers. |
+| `instructions/spec.common.md` | Shared spec body fetched at runtime by per-harness wrappers (`spec.claude.md`, `spec.opencode.md`, `spec.copilot.md`). Contains collaboration style, workflow, output template, research guide, and cost discipline rules. |
+| `instructions/remember.md` | Consolidated reminders (language policy, cost discipline, completion rule) appended by wrappers. |
+| `instructions/remember.chinese.md` | Variant with Chinese thinking mode (`--tacaño`/`--stingy`) for token-efficient reasoning on Chinese-origin models. |
 | `claude/commands/` | Wrappers for Claude Code. YAML frontmatter (`description`, `argument-hint`, `model`, `effort`) + fetch to `instructions/`. |
-| `opencode/commands/` | Wrappers for opencode. YAML frontmatter (`description`, `model`) + fetch to `instructions/`. |
-| `opencode/opencode.jsonc` | Sub-agent explore configuration (mode + trusted low-cost model). |
+| `opencode/commands/` | Wrappers for opencode. YAML frontmatter (`description`, `model`) + fetch to `instructions/`. Includes model-specific spec variants (`ai-1-spec-gpt`, `ai-1-spec-opus`). |
+| `opencode/opencode.jsonc` | Sub-agent explore configuration (mode + trusted low-cost model). Required for cost-effective research delegation. |
 | `github/prompts/` | Prompts for GitHub Copilot. Equivalent to the commands above. |
 
 Wrappers are **thin** — they only specify the model and fetch the markdown from `instructions/`. The logic lives in `instructions/`.
@@ -46,10 +49,25 @@ All agents MUST think and reason internally in English, regardless of the user's
 
 - **User-facing chat:** respond in the language the user writes in (default to English if unclear).
 - **Generated artifacts** (`spec.md`, `plan.md`, `review.md`, `security.md`, `performance.md`, `accessibility.md`, commit messages, PR bodies, code, technical explanations): written in English unless the user explicitly requests otherwise.
+- **Chinese thinking mode:** adding `--tacaño` or `--stingy` to the prompt switches internal reasoning to Chinese (more token-efficient on Chinese-origin models) while keeping artifacts and user-facing responses in English/user's language.
 
 ### Caveman Communication Mode
 All instructions include `instructions/caveman.md`. Default is **lite**: no filler, pleasantries, or hedging. Fragments allowed in `full` only for internal reasoning.
 Flag `--full-caveman` in `$ARGUMENTS` activates full mode.
+
+### Spec Common Body Pattern
+The spec instruction uses a **common body + harness context** architecture:
+- `instructions/spec.common.md` contains the shared logic (collaboration style, workflow, output template, research guide, cost discipline).
+- Per-harness wrappers (`spec.claude.md`, `spec.opencode.md`, `spec.copilot.md`) supply only the **Harness Context** (subagent naming, model routing, tool-call caps) and fetch the common body at runtime.
+- This avoids tripling maintenance on the ~300-line spec body across 3 platforms.
+
+### Cost Discipline (research subagents)
+The main agent reasons and synthesizes. Subagents do I/O. Key rules:
+- Default research subagent is the **cheap** tier (haiku/Explore+haiku/explorer custom agent). Escalated tier only for multi-step synthesis.
+- Every subagent call declares an **output contract** (exact fields, length cap, no raw content).
+- Main agent never calls WebFetch directly; all external doc lookups go through the research subagent.
+- Speculative exploration ("look around") allowed only in the cheap tier.
+- Tool-call caps per tier: cheap ≤30, escalated ≤15, fallback/general ≤10.
 
 ### GLOSSARY.md
 - `spec.md`: reads `GLOSSARY.md`, updates it inline, challenges ambiguous terms.
@@ -102,9 +120,9 @@ plans/{feature-name}/
 
 ### Add / modify an instruction
 1. Edit the file in `instructions/`.
-2. If the recommended model changes, update the wrappers in `claude/commands/` and `opencode/commands/`.
-3. Keep `github/prompts/` in sync if the change affects the base prompt.
-4. If the platform requires different fetch URLs (e.g. GitHub Copilot cannot reach a private repo), create `instructions/{name}.github.md` and point the GitHub prompt to it.
+2. If the change is in the spec, edit `instructions/spec.common.md` (shared body) or the relevant harness wrapper (`spec.claude.md`, `spec.opencode.md`, `spec.copilot.md`) if the change is platform-specific.
+3. If the recommended model changes, update the wrappers in `claude/commands/` and `opencode/commands/`.
+4. Keep `github/prompts/` in sync if the change affects the base prompt.
 
 ### Add a new command
 1. Create the instruction in `instructions/{name}.md` with Isolation Mode + TASK block.
@@ -115,4 +133,5 @@ plans/{feature-name}/
 ### Format conventions
 - Never use `any` in TypeScript (even though there is no TS here, it applies to code examples in instructions).
 - Generated artifacts (`spec.md`, `plan.md`, etc.) are in English unless the user explicitly requests otherwise.
-- Fetch URLs point to `https://github.com/mmadariaga/prompts/blob/main/instructions/...` (`main` branch).
+- Fetch URLs point to `https://github.com/mmadariaga/prompts/blob/main/instructions/...` (`experimental` branch).
+- `TODO-ENHANCEMENTS.md` tracks future enhancement ideas (not part of the pipeline).

@@ -24,7 +24,11 @@
    2. **Scope** (optional, default = diff vs parent branch):
        - `--full` → audit all UI files in the repo
        - `--path {dir}` → audit a specific path
-       - Otherwise: diff vs parent branch (auto-inferred — feature branch parent, else `master`/`main`). State the inferred parent branch before proceeding.
+       - Otherwise: diff vs parent branch. Detection order:
+           - If user provided, use it.
+           - Else read repo default from `git symbolic-ref --short refs/remotes/origin/HEAD` (strip `origin/` prefix).
+           - If unset, try `master`, then `main` — verify each with `git rev-parse --verify <branch>`.
+           - State the inferred parent branch explicitly to the user before proceeding.
    3. **Runtime mode** (optional): `--runtime` to enable browser-based axe/Lighthouse/keyboard walks. Default: static-only. Runtime requires the user to start the dev server and explicitly authorize each command.
 
    If `spec.md` is missing, respond with: **"spec.md is required to perform a domain-aware accessibility audit. Please attach `plans/{feature-name}/spec.md`."** and STOP.
@@ -52,27 +56,30 @@
 
    ## Audit Phases
 
+   **Subagent reference:** When this document says "research subagent", invoke the cheap research subagent your harness exposes — `explore` in opencode, `Explore` in Claude Code, the pre-defined explorer custom agent in GitHub Copilot. Never route lookup work to the general/frontier-tier subagent.
+
    ### Phase 1: Discovery & Component Mapping
 
-   1. **Determine scope** (see Required Inputs). For diff mode:
+   1. **Read `spec.md`** first and record explicitly accepted accessibility trade-offs as *Acknowledged*. Anchors all later phases.
+   2. **Determine scope** (see Required Inputs). For diff mode:
        - `git diff --name-status {parent-branch}...HEAD`
        - Filter to UI files. If empty, STOP with note.
-   2. **Detect framework(s) in scope:**
+       - If >5 UI files in scope, delegate per-component scan to research subagents with output contract (file:line + WCAG SC + finding category + ≤80 words).
+   3. **Detect framework(s) in scope:**
        - React (`.tsx`, `.jsx`) — hook patterns, `React.memo`, `useRef` for focus, portals
        - Astro (`.astro`) — client directives, island hydration boundaries
        - Tailwind (utility classes) — design token contrast, focus utilities (`focus-visible:`, `focus:`)
        - Plain HTML / templates
-   3. **Identify component types in scope:**
+   4. **Identify component types in scope:**
        - Interactive widgets (modal, dialog, menu, dropdown, combobox, tabs, accordion, carousel, toast)
        - Forms (inputs, selects, validation surfaces)
        - Navigation (header, nav, breadcrumb, route announcer)
        - Media (img, video, audio, svg, canvas, charts)
        - Dynamic (live regions, async loaders, route changes, optimistic updates)
        - Static content (headings, landmarks, lists, tables, links)
-   4. **Read `spec.md`** and record explicitly accepted accessibility trade-offs as *Acknowledged*.
    5. **Identify design tokens in scope** — Tailwind theme colors, custom CSS variables — for contrast checks.
 
-   Use **Agent tool with `subagent_type: "Explore"`** in parallel when independent component areas need codebase context (e.g. tracing a `Modal` component reused across pages to determine impact).
+   Use the **research subagent** in parallel when independent component areas need codebase context (e.g. tracing a `Modal` component reused across pages to determine impact). Each research-subagent call MUST declare an output contract: exact fields (file:line + WCAG SC + 1-line note), max-words cap (≤200), no raw code blocks returned to main. Cap total research-subagent invocations at ≤8 per audit.
 
    ### Phase 2: Semantics & Structure
 
@@ -305,7 +312,7 @@
    - **State "No instances detected"** for evaluated categories that came up clean — do not silently omit.
    - **Diff-scoped by default.** Out-of-scope risks get a one-line note, not a full audit.
    - **Quote evidence exactly.** No paraphrasing of axe output, Lighthouse findings, or offending markup.
-   - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/accessibility.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
+   - **Language:** You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/accessibility.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
 
    ## Self-Critique Before Saving
 

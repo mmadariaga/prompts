@@ -21,9 +21,10 @@
    Before starting, the user MUST provide:
 
    1. **`spec.md`** — the feature specification (`plans/{feature-name}/spec.md`) authored in Step 1. This anchors the review to the agreed domain goals, design decisions, and discarded alternatives so you do not propose changes that contradict them.
-   2. **Parent branch** (optional) — the branch to diff against. If not provided, infer it:
-        - If current branch was created from another feature branch, use that branch.
-        - Otherwise default to `master` (or `main` if `master` does not exist).
+   2. **Parent branch** (optional) — the branch to diff against. Detection order:
+        - If user provided, use it.
+        - Else read repo default from `git symbolic-ref --short refs/remotes/origin/HEAD` (strip `origin/` prefix).
+        - If unset, try `master`, then `main` — verify each with `git rev-parse --verify <branch>`.
         - State the inferred parent branch explicitly to the user before proceeding.
 
    If `spec.md` is missing, respond with: **"spec.md is required to perform a domain-aware review. Please attach `plans/{feature-name}/spec.md`."** and STOP.
@@ -34,9 +35,11 @@
    - Treat the user as a **knowledgeable peer**. Findings must carry concrete reasoning, not platitudes.
    - **No empty validation.** If the change is correct, say so briefly and move on. If it is wrong, explain what fails and propose alternatives with trade-offs.
    - **Respect domain decisions.** Anything explicitly accepted, discarded, or out-of-scope in `spec.md` is **not** a finding. If you disagree with a decision recorded in `spec.md`, surface it as an **Open Question**, not as a defect.
-   - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/review.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
+   - **Language:** You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/review.md`, documents, code references, technical explanations) are written in English unless the user explicitly requests otherwise.
 
    ## Workflow
+
+   **Subagent reference:** When this document says "research subagent", invoke the cheap research subagent your harness exposes — `explore` in opencode, `Explore` in Claude Code, the pre-defined explorer custom agent in GitHub Copilot. Never route lookup work to the general/frontier-tier subagent.
 
    ### Step 1: Establish Diff Scope
 
@@ -46,15 +49,15 @@
         - Required documentation references
         - Implementation Generator Expertise Profile (technologies, standards, quality bar)
    2. Determine the parent branch (see Required Inputs).
-   3. Compute the diff:
-        - List modified files: `git diff --name-status {parent-branch}...HEAD`
-        - For each file, retrieve the diff: `git diff {parent-branch}...HEAD -- {file}`
-        - Use `git log {parent-branch}..HEAD --oneline` to map commits to the implementation steps.
+   3. Compute the diff in one pass:
+        - File list: `git diff --name-status {parent-branch}...HEAD`
+        - Unified diff: `git diff {parent-branch}...HEAD` (single call). If diff exceeds 500 LOC, delegate per-file inspection to research subagents with output contract (file:line + finding category + ≤80 words).
+        - Commit map: `git log {parent-branch}..HEAD --oneline`
    4. Verify the diff is non-empty. If empty, respond with: **"No changes detected against {parent-branch}. Nothing to review."** and STOP.
 
    ### Step 2: Review the Changes
 
-   For every modified file, perform a multi-pass review against the categories below. Use **Agent tool with `subagent_type: "Explore"`** in parallel when independent areas of the diff need codebase context (e.g. checking how a modified function is called elsewhere, verifying a pattern is consistent with existing code).
+   For every modified file, perform a multi-pass review against the categories below. Use the **research subagent** in parallel when independent areas of the diff need codebase context (e.g. checking how a modified function is called elsewhere, verifying a pattern is consistent with existing code). Each research-subagent call MUST declare an output contract: exact fields (file:line + 1-line note), max-words cap (≤200), no raw code blocks returned to main. Cap total research-subagent invocations at ≤8 per review.
 
    Review categories (apply each pass to the full diff):
 
@@ -78,11 +81,16 @@
         - Loops or data transformations over user-controlled or unbounded inputs
         - Caching layers added, removed, or invalidated
         Your job here is **not** to run EXPLAIN, profile, or measure CWV. Only flag *surface touched: yes/no* and list the specific files. If yes, recommend `/ai-6-performance` in the report. Do not raise individual performance findings unless they are blatant (e.g. nested loop on a known-large collection, `SELECT *` inside a per-row loop, render-blocking `<script>` without `defer`) — those go as Major/Blocker with a note that `/ai-6-performance` will cover the rest.
-   5. **Maintainability** — SOLID violations, unjustified coupling, duplication, unclear naming, dead code, leaked abstractions, missing or misleading comments where the WHY is non-obvious.
-   6. **Testing** — Are new code paths covered? Do tests assert real behavior or just call the code? Are integration boundaries (DB, HTTP, queues) exercised where the project's convention requires it?
-   7. **Consistency with Codebase** — Does the change follow existing architectural patterns, naming, error handling, and logging conventions discoverable in the repo? Does it respect the Expertise Profile from `spec.md`?
-   8. **Domain Language Consistency** — If `GLOSSARY.md` exists, check that new identifiers (classes, functions, files, variables) use its canonical terms. Flag deviations as Minor findings. Do not flag if no `GLOSSARY.md` is present. Format reference: fetch https://github.com/mmadariaga/prompts/blob/main/instructions/glossary-format.md to parse the file (Language, Relationships, Example dialogue, Flagged ambiguities sections).
-   9. **Documentation & Migrations** — Are ADRs/DDRs, READMEs, OpenAPI/typedefs, or DB migrations updated when the change requires it?
+   5. **Accessibility (triage only — DO NOT deep audit)** — Detect whether the diff touches **UI surface**:
+        - Files with extensions `.tsx`/`.jsx`/`.astro`/`.html`/`.vue`/`.svelte`/`.css`
+        - Component-bearing markdown
+        - Interactive widgets, forms, navigation, media, dynamic-SPA, visual-design tokens, route announcements
+        Your job here is **not** to run axe, lighthouse, or manual SR testing. Only flag *surface touched: yes/no* and list the specific files. If yes, recommend `/ai-7-accessibility` in the report. Do not raise individual a11y findings unless blatant (e.g. `<img>` without alt, click handler on `<div>` with no role/keyboard) — those go as Major/Blocker with a note that `/ai-7-accessibility` will cover the rest.
+   6. **Maintainability** — SOLID violations, unjustified coupling, duplication, unclear naming, dead code, leaked abstractions, missing or misleading comments where the WHY is non-obvious.
+   7. **Testing** — Are new code paths covered? Do tests assert real behavior or just call the code? Are integration boundaries (DB, HTTP, queues) exercised where the project's convention requires it?
+   8. **Consistency with Codebase** — Does the change follow existing architectural patterns, naming, error handling, and logging conventions discoverable in the repo? Does it respect the Expertise Profile from `spec.md`?
+   9. **Domain Language Consistency** — Only if `GLOSSARY.md` exists at repo root: delegate to a research subagent to fetch the format reference (https://github.com/mmadariaga/prompts/blob/main/instructions/glossary-format.md) and return ≤30 canonical terms (Language, Relationships, Example dialogue, Flagged ambiguities sections). Then check new identifiers (classes, functions, files, variables) against those terms. Flag deviations as Minor. If no `GLOSSARY.md`, skip this category entirely — do NOT fetch.
+   10. **Documentation & Migrations** — Are ADRs/DDRs, READMEs, OpenAPI/typedefs, or DB migrations updated when the change requires it?
 
    ### Step 3: Classify and Prioritize Findings
 

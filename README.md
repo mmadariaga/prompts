@@ -98,7 +98,7 @@ Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred ov
 
 All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat always responds in the user's own language (Spanish, French, German, etc.). All generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) are written in English.
 
-Chinese models are often even more token-efficient when reasoning in Chinese. For workloads running on Chinese-origin models, you can activate **Chinese thinking** by adding `--tacaño` or `--stingy` to the prompt. When this flag is present, the agent switches its internal reasoning to Chinese while continuing to produce all artifacts and user-facing responses in English (or the user's language). [Reference](https://x.com/arankomatsuzaki/status/2049177688402022730)
+Chinese models are often even more token-efficient when reasoning in Chinese. For workloads running on Chinese-origin models, you can activate **Chinese thinking** by adding `--tacaño` or `--stingy` to the prompt (Experimental). When this flag is present, the agent switches its internal reasoning to Chinese while continuing to produce all artifacts and user-facing responses in English (or the user's language). [Reference](https://x.com/arankomatsuzaki/status/2049177688402022730)
 
 #### Task-Matched Model Selection
 Each phase uses a model chosen for its specific strengths: reasoning-heavy phases (spec, security) use frontier models; planning and review use balanced mid-range models; implementation, commit, and PR use fast, cost-efficient models. See the [Recommended models by phase](#recommended-models-by-phase) table above.
@@ -106,7 +106,7 @@ Each phase uses a model chosen for its specific strengths: reasoning-heavy phase
 ### Proven Strategies
 
 #### Spec First
-Every feature starts with a specification (`spec.md`) that captures goals, acceptance criteria, technical constraints, and design decisions. The plan (`plan.md`) is derived from the spec, and implementation follows the plan. This is [Spec-Driven Development](https://scrummanager.com/community/spec-driven-development-qu-es-de-dnde-viene-y-por-qu-importa) at the *spec-first* level —the spec drives the current task and is kept as a living artifact for the pipeline phases that follow (review, security, performance, accessibility). No *vibe coding*: every line of generated code is grounded in an explicit contract.
+Every feature starts with a specification (`spec.md`) that captures goals, acceptance criteria, technical constraints, and design decisions. The plan (`plan.md`) is derived from the spec, and implementation follows the plan. This is [Spec-Driven Development](https://scrummanager.com/community/spec-driven-development-qu-es-de-dnde-viene-y-por-qu-importa) at the *spec-first* level —the spec drives the current task and is kept as a living artifact for the pipeline phases that follow (review, security, performance, accessibility). No *vibe coding*: every line of generated code is grounded in an explicit contract. The spec uses a **common body + harness context** architecture (`spec.common.md` + per-harness wrappers) to avoid tripling maintenance across Claude Code, opencode, and Copilot.
 
 #### Isolation Mode
 Every command starts with zero inherited context —it reads only the `<TASK>` block and the artifacts it needs. This prevents context pollution across phases, makes each run replicable, and enables safe model switching between phases.
@@ -121,10 +121,15 @@ Domain terms are captured in a living `GLOSSARY.md` at the project root. Spec re
 Each phase produces exactly one artifact. Only `ai-3-implement` writes code; spec, plan, review, and audits produce only markdown in `plans/{feature-name}/`. No phase oversteps its scope, and every instruction file ends with a "Scope Reminder" block to enforce this.
 
 #### Sub-Agent Exploration
-Complex or exploratory tasks are delegated to sub-agents running cost-effective models matched to the subtask complexity. By default, sub-agents do not inherit the main session's token window, preventing context pollution and keeping costs predictable.
+Complex or exploratory tasks are delegated to sub-agents running cost-effective models matched to the subtask complexity. By default, sub-agents do not inherit the main session's token window, preventing context pollution and keeping costs predictable. Each subagent call declares an **output contract** (exact fields, length cap, no raw content) so only distilled signal enters the main context. The main agent never calls WebFetch directly — all external doc lookups go through the cheap research subagent. Tool-call caps per tier: cheap ≤30, escalated ≤15, fallback ≤10. 
+
+>This technique can reduce the cost of I/O-intensive tasks like audits to a third.
 
 #### Multi-Pass Review (9 categories)
 The review agent runs nine distinct passes across the full diff: Domain Alignment, Correctness & Bugs, Security triage, Performance triage, Maintainability, Testing, Codebase Consistency, Domain Language Consistency, and Documentation & Migrations.
+
+#### No self-review bias
+The review phase (`ai-4-review`) always runs on a different model than the one used for planning (`ai-2-plan`). The plan agent proposes the code architecture and design decisions — having the same model later review its own output tends to confirm its own assumptions and miss the same blind spots it had when designing the solution. Using a separate model for review introduces a genuinely independent perspective — different training data, different reasoning patterns, different failure modes — which catches real issues that self-review would not.
 
 #### Deferred Verification
 Human checks (browser/UI behavior, visual confirmation) are deferred to the integration step where the behavior is first observable —the plan asks the user to verify parts of the feature as early as possible, not all at the end. Every deferred check appears exactly once, labeled with its origin step.
@@ -138,10 +143,13 @@ Proposes creating an ADR/DDR if all 3 criteria below are met:
 ## Repo structure
 
 ```
-instructions/      ← actual content for each agent (plain markdown, Isolation Mode + TASK)
-claude/commands/   ← wrappers for Claude Code (model + effort + fetch to instructions/)
-opencode/commands/ ← wrappers for opencode (model + fetch to instructions/)
-github/prompts/    ← prompts for GitHub Copilot (model + fetch to instructions/)
+instructions/              ← actual content for each agent (plain markdown, Isolation Mode + TASK)
+instructions/spec.common.md ← shared spec body (collaboration style, workflow, template, research guide, cost discipline)
+instructions/spec.{claude,opencode,copilot}.md ← per-harness wrappers (Harness Context only)
+instructions/remember.md   ← consolidated reminders appended by wrappers
+claude/commands/           ← wrappers for Claude Code (model + effort + fetch to instructions/)
+opencode/commands/         ← wrappers for opencode (model + fetch to instructions/; includes ai-1-spec-gpt, ai-1-spec-opus variants)
+github/prompts/            ← prompts for GitHub Copilot (model + fetch to instructions/)
 ```
 
 ## Global installation (multi-project)
@@ -225,14 +233,18 @@ Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
 
 ### Recommended models by phase
 
+Once installed, modify the models in your commands to adapt them to your subscriptions and personal preferences. The table below shows our default values.
+
 | Phase | Opencode | Claude Code | Copilot |
 |-------|----------|-------------|---------|
-| spec (1) | `opencode/claude-opus-4-6` | `claude-opus-4-7` High | Claude Opus 4.6 |
+| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/kimi-k2.6` | `claude-opus-4-7` High | Claude Opus 4.6 |
 | plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| review (4) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| review (4) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| performance (6) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| accessibility (7) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| performance (6) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| accessibility (7) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 | pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
+
+![Intelligence vs Cost (May 2026)](Intelligence%20vs%20Cost%20(May%202026).png)

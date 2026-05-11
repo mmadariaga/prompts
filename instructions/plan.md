@@ -88,24 +88,18 @@
 
    <research_task>
 
-   Perform deep research to understand the project environment and standards:
+   Confirm conventions WITHOUT fresh codebase exploration. spec.md's `Required Documentation`
+   and `Implementation Generator Expertise Profile` are the primary source of truth.
 
-   1. Project Environment
-      - Folder structure and organization
-      - Naming conventions and file roles
-      - Build/test/run commands
-      - Dependency managers and project types
-
-   2. Code Patterns
-      - Common implementation and naming patterns
-      - Existing error handling and logging strategies
-      - Shared config and helper utilities
-
-   3. Architecture and Design
-      - Component relationships and data flow
-      - Testing strategies and frameworks
-      - API structure and naming
-      - Permission or integration caveats
+   1. Codebase Verification (bounded)
+      - Use ONLY the file paths listed in spec.md `Required Documentation` to confirm
+        existing conventions (layout, naming, error handling, logging, testing patterns,
+        permission boundaries).
+      - If a convention is needed for code generation but is not nailed down by spec.md
+        (Expertise Profile silent AND no neighbour file in Required Documentation
+        demonstrates it), STOP and ask the user. Do NOT run repo-wide Grep/Glob to
+        guess the convention — that is spec.md's job.
+      - Build/test/run commands come from the Expertise Profile or AGENTS.md if listed.
 
    4. Official Docs
       - Read ONLY the documents listed in `## Required Documentation` from spec.md
@@ -253,7 +247,7 @@
    - Adopt the Implementation Generator Expertise Profile from spec.md as a non-negotiable contract. Do not deviate from it. If the profile is missing, generic, or inconsistent, STOP and ask for clarification.
    - **Deferred verifications:** Human checks that cannot be performed at their step (because the component is not yet rendered in the app) must be deferred — not omitted — to the step where they first become observable. At that integration step, list them in labeled blocks before the step's own Human checks: `*Deferred from Step N ({name}):*`. Every deferred check must appear exactly once in the plan.
    - **RED → GREEN:** For testable steps, always write the test first (RED) and verify it fails before writing the implementation (GREEN). This proves the test is real and not tautological.
-    - **Language:** You MUST think and reason internally in English. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/plan.md`, documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
+    - **Language:** You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/plan.md`, documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
 
    ## Contextual Intelligence
 
