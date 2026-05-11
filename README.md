@@ -242,18 +242,22 @@ Once installed, modify the models in your commands to adapt them to your subscri
 
 | Phase | Opencode | Claude Code | Copilot |
 |-------|----------|-------------|---------|
-| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/kimi-k2.6` | `claude-opus-4-7` High | Claude Opus 4.6 |
+| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode/glm-5.1` | `claude-opus-4-7` High | Claude Opus 4.6 |
 | plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 | review (4) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| performance (6) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| accessibility (7) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| performance (6) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| accessibility (7) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 | pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 
 ### Choosing a model
 
-This chart is a reference for model selection. The intelligence axis is highly task-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us. On the other hand, the x-axis (cost) is fairly reliable.
+This chart may help you identify which models to test. The intelligence axis is highly task-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us, but you may find better alternatives for your specific needs.
+
+The x-axis (cost) is usually quite reliable.
 
 ![Intelligence vs Cost (May 2026)](Intelligence%20vs%20Cost%20(May%202026).png)
+
+Another ranking of models for coding tasks: https://llm-stats.com/leaderboards/best-ai-for-coding
