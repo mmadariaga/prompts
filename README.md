@@ -1,8 +1,8 @@
 # shared-ai
 
-Claude Code, GitHub Copilot and opencode commands for a structured development workflow: **spec → plan → implement → review → audits → PR**.
+AI commands for a cost-efficient, slightly opinionated, spec-first, structured development workflow: **spec → plan → implement → review → audits → PR**. Works great on opencode with an opencode-go subscription + any frontier model provider subscription (Claude / GPT / Copilot / Gemini). Can also run on Claude Code (tested only on spec creation) and GitHub Copilot (untested).
 
-Each command is a thin wrapper that fetches its instructions from `instructions/` in this repo and runs them in *Isolation Mode* (no inherited context from previous chats). Each phase produces an artifact in `plans/{feature-name}/` that feeds into the next.
+Each workflow step produces an artifact in `plans/{feature-name}/` that feeds into the next.
 
 ## Index
 
@@ -31,16 +31,6 @@ Each command is a thin wrapper that fetches its instructions from `instructions/
 | `/ai-commit` | Generates a Conventional Commits message from `git diff --cached`. Subject ≤50 chars, body only when the *why* is not obvious. `git commit` with explicit authorization |
 | `/ai-pr` | Synthesizes PR title + body from spec/plan/review/security/performance/accessibility + git log. Saves draft and opens PR via `gh` with explicit authorization |
 
-## Triage in `ai-4-review`
-
-`ai-4-review` does not perform deep SAST, profiling, or axe analysis. It detects the touched surface and recommends the specific audit:
-
-- **Security surface** (auth, input parsing, dynamic queries, crypto, HTTP boundary, deps, logging) → `/ai-5-security`
-- **Performance surface** (new queries, endpoints, consumers, hot components, deps, loops over unbounded input, caching) → `/ai-6-performance`
-- **Accessibility surface** (`.tsx`/`.jsx`/`.astro`/`.html`/`.vue`/`.svelte`/`.css`) → `/ai-7-accessibility`
-
-All audits are diff-scoped by default vs parent branch. Support `--full` or `--path {dir}` to expand scope.
-
 ## Typical usage
 
 ```
@@ -59,10 +49,20 @@ All audits are diff-scoped by default vs parent branch. Support `--full` or `--p
 /ai-pr plans/oauth2-auth/spec.md
 ```
 
-> **Important:** open a new chat between commands. Reasons:
+> **Important:** open a new chat between commands:
 > - **Token savings** — each phase only inherits the artifact it needs, not the full history.
 > - **Clean, replicable context** — each phase starts from scratch (Isolation Mode), making it easy to debug and replay steps in isolation.
 > - **Model isolation** — each phase uses the most cost-effective model for its task.
+
+## Triage in `ai-4-review`
+
+`ai-4-review` does not perform deep SAST, profiling, or axe analysis. It detects the touched surface and recommends the specific audit:
+
+- **Security surface** (auth, input parsing, dynamic queries, crypto, HTTP boundary, deps, logging) → `/ai-5-security`
+- **Performance surface** (new queries, endpoints, consumers, hot components, deps, loops over unbounded input, caching) → `/ai-6-performance`
+- **Accessibility surface** (`.tsx`/`.jsx`/`.astro`/`.html`/`.vue`/`.svelte`/`.css`) → `/ai-7-accessibility`
+
+All audits are diff-scoped by default vs parent branch. Support `--full` or `--path {dir}` to expand scope.
 
 ## Iterate as needed
 
@@ -98,7 +98,12 @@ Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred ov
 
 All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat always responds in the user's own language (Spanish, French, German, etc.). All generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) are written in English.
 
-Chinese models are often even more token-efficient when reasoning in Chinese. For workloads running on Chinese-origin models, you can activate **Chinese thinking** by adding `--tacaño` or `--stingy` to the prompt (Experimental). When this flag is present, the agent switches its internal reasoning to Chinese while continuing to produce all artifacts and user-facing responses in English (or the user's language). [Reference](https://x.com/arankomatsuzaki/status/2049177688402022730)
+**(Experimental)** Chinese models are often [even more token-efficient](https://x.com/arankomatsuzaki/status/2049177688402022730) when reasoning in Chinese. For workloads running on Chinese-origin models, you can activate **Chinese thinking** by adding `--tacaño` or `--stingy` to the prompt. When this flag is present, the agent switches its internal reasoning and **artifact generation** to Chinese — only user-facing responses remain in the user's language. 
+> **Use only if you were not planning to review the artifacts anyway.**
+
+We don't keep artifacts in English because continuous translation between Chinese and English when creating artifacts consumes more tokens than it saves. We do keep user-facing responses in the user's language because otherwise this mode would be unusable unless you know Chinese. Besides, internal thinking represents far more tokens than the output, so the savings still apply. 
+
+
 
 #### Task-Matched Model Selection
 Each phase uses a model chosen for its specific strengths: reasoning-heavy phases (spec, security) use frontier models; planning and review use balanced mid-range models; implementation, commit, and PR use fast, cost-efficient models. See the [Recommended models by phase](#recommended-models-by-phase) table above.
@@ -123,13 +128,13 @@ Each phase produces exactly one artifact. Only `ai-3-implement` writes code; spe
 #### Sub-Agent Exploration
 Complex or exploratory tasks are delegated to sub-agents running cost-effective models matched to the subtask complexity. By default, sub-agents do not inherit the main session's token window, preventing context pollution and keeping costs predictable. Each subagent call declares an **output contract** (exact fields, length cap, no raw content) so only distilled signal enters the main context. The main agent never calls WebFetch directly — all external doc lookups go through the cheap research subagent. Tool-call caps per tier: cheap ≤30, escalated ≤15, fallback ≤10. 
 
->This technique can reduce the cost of I/O-intensive tasks like audits to a third.
+>This technique can reduce the cost of `/ai-1-spec` on I/O-intensive tasks, like audits, to a third.
 
 #### Multi-Pass Review (9 categories)
 The review agent runs nine distinct passes across the full diff: Domain Alignment, Correctness & Bugs, Security triage, Performance triage, Maintainability, Testing, Codebase Consistency, Domain Language Consistency, and Documentation & Migrations.
 
 #### No self-review bias
-The review phase (`ai-4-review`) always runs on a different model than the one used for planning (`ai-2-plan`). The plan agent proposes the code architecture and design decisions — having the same model later review its own output tends to confirm its own assumptions and miss the same blind spots it had when designing the solution. Using a separate model for review introduces a genuinely independent perspective — different training data, different reasoning patterns, different failure modes — which catches real issues that self-review would not.
+The review phase (`ai-4-review`) runs on a different model than the one used for planning (`ai-2-plan`). The plan agent proposes the code architecture and design decisions — having the same model later review its own output tends to confirm its own assumptions and miss the same blind spots it had when designing the solution. Using a separate model for review introduces a genuinely independent perspective — different training data, different reasoning patterns, different failure modes — which catches real issues that self-review would not.
 
 #### Deferred Verification
 Human checks (browser/UI behavior, visual confirmation) are deferred to the integration step where the behavior is first observable —the plan asks the user to verify parts of the feature as early as possible, not all at the end. Every deferred check appears exactly once, labeled with its origin step.
@@ -240,11 +245,15 @@ Once installed, modify the models in your commands to adapt them to your subscri
 | spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/kimi-k2.6` | `claude-opus-4-7` High | Claude Opus 4.6 |
 | plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| review (4) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
+| review (4) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
 | performance (6) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | accessibility (7) | `opencode-go/mimo-v2.5-pro` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 | pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
+
+### Choosing a model
+
+This chart is a reference for model selection. The intelligence axis is highly task-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us. On the other hand, the x-axis (cost) is fairly reliable.
 
 ![Intelligence vs Cost (May 2026)](Intelligence%20vs%20Cost%20(May%202026).png)
