@@ -5,6 +5,6 @@ model: claude-opus-4-7
 effort: high
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/spec.claude.md and follow those instructions exactly. Feature request: $ARGUMENTS
+Fetch @~/.claude/commands/instructions/spec.claude.md and follow those instructions exactly. Feature request: $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md
+Also fetch @~/.claude/commands/instructions/remember.md

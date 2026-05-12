@@ -4,6 +4,6 @@ argument-hint: "[optional: --scope X --type Y --no-body --amend]"
 model: claude-haiku-4-5
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/commit.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.claude/commands/instructions/commit.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md
+Also fetch @~/.claude/commands/instructions/remember.md

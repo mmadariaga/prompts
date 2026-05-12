@@ -5,6 +5,6 @@ model: claude-opus-4-7
 effort: high
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/security.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.claude/commands/instructions/security.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md
+Also fetch @~/.claude/commands/instructions/remember.md
