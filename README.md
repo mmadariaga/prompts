@@ -70,7 +70,8 @@ After review and audits, start a new cycle from the existing artifacts if requir
 
 - **Full re-spec** — for major changes, new requirements, or architectural shifts:
   ```
-  /ai-1-spec Based on the specification we just implemented and the enhancements and bugs identified during review, create a new spec in plans/oauth2-auth-review-enhancements
+  /ai-1-spec Based on the specification we just implemented and the enhancements and bugs identified 
+  during review, create a new spec in plans/oauth2-auth-review-enhancements
   @plans/oauth2-auth/spec.md
   @plans/oauth2-auth/review.md
   @plans/oauth2-auth/security.md
@@ -80,9 +81,13 @@ After review and audits, start a new cycle from the existing artifacts if requir
 
 - **Skip spec, re-plan only** — for contained fixes where the original specification is still valid. Keeps the spec unchanged and generates a fresh plan addressing the review findings:
   ```
-  /ai-2-plan Based on the existing spec and the review findings below, create a new plan in plans/oauth2-auth-fixes
+  /ai-2-plan Based on the existing spec and the review findings below, create a 
+  new plan in plans/oauth2-auth/plan-iteration-2.md
   @plans/oauth2-auth/spec.md
   @plans/oauth2-auth/review.md
+  @plans/oauth2-auth/accessibility.md
+
+  Plus, I just found that the cancel button does nothing
   ```
 
 ## Project Highlights
