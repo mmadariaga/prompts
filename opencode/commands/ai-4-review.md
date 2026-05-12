@@ -3,6 +3,6 @@ description: Structured Code Review Prompt — diffs current branch against pare
 model: opencode-go/qwen3.6-plus
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/review.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.config/opencode/commands/instructions/review.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.chinese.md
+Also fetch @~/.config/opencode/commands/instructions/remember.chinese.md

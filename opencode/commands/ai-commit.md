@@ -3,6 +3,6 @@ description: Conventional Commits message author from staged changes — generat
 model: opencode-go/deepseek-v4-flash
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/commit.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.config/opencode/commands/instructions/commit.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md
+Also fetch @~/.config/opencode/commands/instructions/remember.md

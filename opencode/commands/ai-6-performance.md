@@ -3,6 +3,6 @@ description: Structured Performance Audit Prompt — backend / frontend / databa
 model: opencode-go/qwen3.6-plus
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/performance.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.config/opencode/commands/instructions/performance.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.chinese.md
+Also fetch @~/.config/opencode/commands/instructions/remember.chinese.md

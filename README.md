@@ -174,6 +174,13 @@ Commands are designed as **user globals**, not per project. A single copy in the
 mkdir -p ~/.config/opencode/commands
 cp opencode/commands/*.md ~/.config/opencode/commands/
 
+# Copy instructions
+if [ -d ~/.config/opencode/commands/instructions ]; then
+    echo "Overwriting ~/.config/opencode/commands/instructions/"
+fi
+mkdir -p ~/.config/opencode/commands/instructions
+cp instructions/*.md ~/.config/opencode/commands/instructions/
+
 # Copy opencode.json
 if [ ! -f ~/.config/opencode/opencode.json ] && [ ! -f ~/.config/opencode/opencode.jsonc ]; then
     cp opencode/opencode.jsonc ~/.config/opencode/
@@ -196,6 +203,14 @@ fi
 $configDir = "$env:USERPROFILE\.config\opencode"
 New-Item -ItemType Directory -Force -Path "$configDir\commands"
 Copy-Item opencode\commands\*.md "$configDir\commands\"
+
+# Copy instructions
+$instructionsDir = "$configDir\commands\instructions"
+if (Test-Path $instructionsDir) {
+    Write-Host "Overwriting $instructionsDir"
+}
+New-Item -ItemType Directory -Force -Path $instructionsDir | Out-Null
+Copy-Item instructions\*.md $instructionsDir\
 
 # Copy opencode.json
 $jsonPath = Join-Path $configDir "opencode.json"

@@ -3,6 +3,6 @@ description: Structured planning prompt — deconstructs a feature request into 
 model: opencode/gemini-3.1-pro
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/spec.opencode.md and follow those instructions exactly. Feature request: $ARGUMENTS
+Fetch @~/.config/opencode/commands/instructions/spec.opencode.md and follow those instructions exactly. Feature request: $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.md
+Also fetch @~/.config/opencode/commands/instructions/remember.md

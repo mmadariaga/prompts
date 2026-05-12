@@ -3,6 +3,6 @@ description: Structured Accessibility Audit Prompt — WCAG 2.2 AA static review
 model: opencode-go/qwen3.6-plus
 ---
 
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/accessibility.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.config/opencode/commands/instructions/accessibility.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch https://github.com/mmadariaga/prompts/blob/main/instructions/remember.chinese.md
+Also fetch @~/.config/opencode/commands/instructions/remember.chinese.md
