@@ -24,7 +24,7 @@ New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\commands"
 Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
 
 # Copy instructions
-$instructionsDir = "$env:USERPROFILE\.claude\commands\instructions"
+$instructionsDir = "$env:USERPROFILE\.claude\instructions"
 if (Test-Path $instructionsDir) {
     Write-Host "Overwriting $instructionsDir"
 }

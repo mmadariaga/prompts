@@ -1,6 +1,6 @@
 # shared-ai
 
-AI commands for a cost-efficient, slightly opinionated, spec-first, structured development workflow: **spec → plan → implement → review → audits → PR**. Works great on opencode with an opencode-go subscription + any frontier model provider subscription (Claude / GPT / Copilot / Gemini). Can also run on Claude Code (tested only on spec creation) and GitHub Copilot (untested).
+AI commands for a cost-efficient, slightly opinionated, spec-first, structured development workflow: **spec → plan → implement → review → audits → PR**. Works great on opencode with an opencode-go subscription + any frontier model provider subscription (Claude / GPT / Copilot / Gemini). Can also run on Claude Code and GitHub Copilot (barely tested).
 
 Each workflow step produces an artifact in `plans/{feature-name}/` that feeds into the next.
 
@@ -205,7 +205,7 @@ New-Item -ItemType Directory -Force -Path "$configDir\commands"
 Copy-Item opencode\commands\*.md "$configDir\commands\"
 
 # Copy instructions
-$instructionsDir = "$configDir\commands\instructions"
+$instructionsDir = "$configDir\instructions"
 if (Test-Path $instructionsDir) {
     Write-Host "Overwriting $instructionsDir"
 }
@@ -233,6 +233,10 @@ if (-not (Test-Path $jsonPath) -and -not (Test-Path $jsoncPath)) {
 ### Claude Code
 
 See [INSTALL.claude.md](INSTALL.claude.md) for installation instructions.
+
+### Github Copilot
+
+See [INSTALL.copilot.md](INSTALL.copilot.md) for installation instructions.
 
 > Per-project commands are still possible via `.claude/commands/` or `.opencode/commands/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
 
