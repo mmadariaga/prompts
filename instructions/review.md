@@ -109,7 +109,16 @@
    2. Save it to: `plans/{feature-name}/review.md`
         - Derive `{feature-name}` from the `spec.md` path the user provided.
    3. Present a concise summary in chat: counts per severity, the top 3 Blockers (if any), and the path to the saved file.
-   4. **Pause for feedback.** Do not modify production code. Fixes are the responsibility of a follow-up implementation pass driven by the user.
+   4. **Print an audit recommendations block** in chat immediately after the summary. Always show all three triage lines, using `✅ Not required` or `⚠️ Recommended` accordingly:
+
+      ```
+      ## Recommended Audits
+      Security     → { ⚠️  Run `/ai-5-security plans/{feature-name}/spec.md` | ✅ Not required }
+      Performance  → { ⚠️  Run `/ai-6-performance plans/{feature-name}/spec.md` | ✅ Not required }
+      Accessibility→ { ⚠️  Run `/ai-7-accessibility plans/{feature-name}/spec.md` | ✅ Not required }
+      ```
+
+   5. **Pause for feedback.** Do not modify production code. Fixes are the responsibility of a follow-up implementation pass driven by the user.
 
    ## Output Template
 
