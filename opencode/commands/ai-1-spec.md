@@ -3,6 +3,6 @@ description: Structured planning prompt — deconstructs a feature request into 
 model: opencode/glm-5.1
 ---
 
-Fetch @~/.config/opencode/commands/instructions/spec.opencode.md and follow those instructions exactly. Feature request: $ARGUMENTS
+Fetch @~/.config/opencode/instructions/spec.opencode.md and follow those instructions exactly. Feature request: $ARGUMENTS
 
-Also fetch @~/.config/opencode/commands/instructions/remember.chinese.md
+Also fetch @~/.config/opencode/instructions/remember.chinese.md

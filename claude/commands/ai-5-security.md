@@ -5,6 +5,6 @@ model: claude-opus-4-7
 effort: high
 ---
 
-Fetch @~/.claude/commands/instructions/security.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.claude/instructions/security.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch @~/.claude/commands/instructions/remember.md
+Also fetch @~/.claude/instructions/remember.md

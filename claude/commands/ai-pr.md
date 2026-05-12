@@ -4,6 +4,6 @@ argument-hint: "[path to spec.md] [optional: parent branch]"
 model: claude-haiku-4-5
 ---
 
-Fetch @~/.claude/commands/instructions/pr.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.claude/instructions/pr.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch @~/.claude/commands/instructions/remember.md
+Also fetch @~/.claude/instructions/remember.md

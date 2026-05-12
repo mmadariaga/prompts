@@ -3,6 +3,6 @@ description: Structured Implementation Thinking Prompt
 model: opencode-go/kimi-k2.6
 ---
 
-Fetch @~/.config/opencode/commands/instructions/plan.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.config/opencode/instructions/plan.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch @~/.config/opencode/commands/instructions/remember.md
+Also fetch @~/.config/opencode/instructions/remember.md

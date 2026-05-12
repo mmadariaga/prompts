@@ -7,7 +7,7 @@
 <TASK>
    ## Communication Mode
 
-   Apply rules from https://github.com/mmadariaga/prompts/blob/main/instructions/caveman.md (fetch the file). Default: lite. If `--full-caveman` appears in arguments, use full instead.
+   Apply rules from @~/.config/opencode/instructions/caveman.md (fetch the file). Default: lite. If `--full-caveman` appears in arguments, use full instead.
 
    ## Harness Context — opencode
 
@@ -22,7 +22,7 @@
 
    ## Common Rules
 
-   Apply rules from https://github.com/mmadariaga/prompts/blob/main/instructions/spec.common.md (fetch the file). When the common rules reference a "research subagent", use the Harness Context above to resolve the concrete subagent type, model routing, and tool-call cap.
+   Apply rules from @~/.config/opencode/instructions/spec.common.md (fetch the file). When the common rules reference a "research subagent", use the Harness Context above to resolve the concrete subagent type, model routing, and tool-call cap.
 
    ## Run
    **User feature request:** $ARGUMENTS

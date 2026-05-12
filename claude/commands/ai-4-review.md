@@ -5,6 +5,6 @@ model: claude-sonnet-4-6
 effort: high
 ---
 
-Fetch @~/.claude/commands/instructions/review.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.claude/instructions/review.md and follow those instructions exactly. $ARGUMENTS
 
-Also fetch @~/.claude/commands/instructions/remember.md
+Also fetch @~/.claude/instructions/remember.md

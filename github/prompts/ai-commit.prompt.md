@@ -3,4 +3,4 @@ agent: 'agent'
 description: "Conventional Commits message author from staged changes — generates subject and optional body, gates git commit behind explicit authorization"
 model: GPT-5 mini (copilot)
 ---
-Fetch https://github.com/mmadariaga/prompts/blob/main/instructions/commit.md and follow those instructions exactly. 
+Fetch @~/.config/opencode/instructions/commit.md and follow those instructions exactly. 

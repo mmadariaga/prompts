@@ -11,11 +11,11 @@ mkdir -p ~/.claude/commands
 cp claude/commands/*.md ~/.claude/commands/
 
 # Copy instructions
-if [ -d ~/.claude/commands/instructions ]; then
-    echo "Overwriting ~/.claude/commands/instructions/"
+if [ -d ~/.claude/instructions ]; then
+    echo "Overwriting ~/.claude/instructions/"
 fi
-mkdir -p ~/.claude/commands/instructions
-cp instructions/*.md ~/.claude/commands/instructions/
+mkdir -p ~/.claude/instructions
+cp instructions/*.md ~/.claude/instructions/
 ```
 
 **Windows (PowerShell):**

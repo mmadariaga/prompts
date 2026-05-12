@@ -133,5 +133,5 @@ plans/{feature-name}/
 ### Format conventions
 - Never use `any` in TypeScript (even though there is no TS here, it applies to code examples in instructions).
 - Generated artifacts (`spec.md`, `plan.md`, etc.) are in English unless the user explicitly requests otherwise.
-- Fetch URLs point to `https://github.com/mmadariaga/prompts/blob/main/instructions/...` (`experimental` branch).
+- Fetch URLs point to `@~/.config/opencode/instructions/...` (`experimental` branch).
 - `TODO-ENHANCEMENTS.md` tracks future enhancement ideas (not part of the pipeline).

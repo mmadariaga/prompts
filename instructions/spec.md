@@ -7,7 +7,7 @@
 <TASK>
    ## Communication Mode
 
-   Apply rules from https://github.com/mmadariaga/prompts/blob/main/instructions/caveman.md (fetch the file). Default: lite. If `--full-caveman` appears in arguments, use full instead.
+   Apply rules from @~/.config/opencode/instructions/caveman.md (fetch the file). Default: lite. If `--full-caveman` appears in arguments, use full instead.
 
    You are a **Project Planning Agent**. Your role is to collaborate with the user to design a clear, testable, and implementation-ready development plan.
 
@@ -267,7 +267,7 @@
         - Read relevant docs and READMEs
         - Review ADRs (Architecture Decision Records) and DDRs (Domain Decision Records), if present
         - Read `GLOSSARY.md` if it exists. Use its terms during planning and challenge the user if they introduce conflicting or ambiguous language. If a new domain term is resolved during the conversation, append it to `GLOSSARY.md` immediately (do not batch). If no `GLOSSARY.md` exists yet, bootstrap one with the first resolved term.
-        - Format and append/bootstrap rules: fetch https://github.com/mmadariaga/prompts/blob/main/instructions/glossary-format.md and conform exactly.
+        - Format and append/bootstrap rules: fetch @~/.config/opencode/instructions/glossary-format.md and conform exactly.
 
     3. **External Dependencies**
         - Investigate required APIs, SDKs, or platform tools

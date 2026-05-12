@@ -175,11 +175,11 @@ mkdir -p ~/.config/opencode/commands
 cp opencode/commands/*.md ~/.config/opencode/commands/
 
 # Copy instructions
-if [ -d ~/.config/opencode/commands/instructions ]; then
-    echo "Overwriting ~/.config/opencode/commands/instructions/"
+if [ -d ~/.config/opencode/instructions ]; then
+    echo "Overwriting ~/.config/opencode/instructions/"
 fi
-mkdir -p ~/.config/opencode/commands/instructions
-cp instructions/*.md ~/.config/opencode/commands/instructions/
+mkdir -p ~/.config/opencode/instructions
+cp instructions/*.md ~/.config/opencode/instructions/
 
 # Copy opencode.json
 if [ ! -f ~/.config/opencode/opencode.json ] && [ ! -f ~/.config/opencode/opencode.jsonc ]; then
