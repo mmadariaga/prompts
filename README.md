@@ -232,37 +232,7 @@ if (-not (Test-Path $jsonPath) -and -not (Test-Path $jsoncPath)) {
 
 ### Claude Code
 
-| OS | Destination |
-|----|---------|
-| Linux / macOS | `~/.claude/commands/` |
-| Windows | `%USERPROFILE%\.claude\commands\` |
-
-**Linux / macOS:**
-```bash
-mkdir -p ~/.claude/commands
-cp claude/commands/*.md ~/.claude/commands/
-
-# Copy instructions
-if [ -d ~/.claude/commands/instructions ]; then
-    echo "Overwriting ~/.claude/commands/instructions/"
-fi
-mkdir -p ~/.claude/commands/instructions
-cp instructions/*.md ~/.claude/commands/instructions/
-```
-
-**Windows (PowerShell):**
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\commands"
-Copy-Item claude\commands\*.md "$env:USERPROFILE\.claude\commands\"
-
-# Copy instructions
-$instructionsDir = "$env:USERPROFILE\.claude\commands\instructions"
-if (Test-Path $instructionsDir) {
-    Write-Host "Overwriting $instructionsDir"
-}
-New-Item -ItemType Directory -Force -Path $instructionsDir | Out-Null
-Copy-Item instructions\*.md $instructionsDir\
-```
+See [INSTALL.claude.md](INSTALL.claude.md) for installation instructions.
 
 > Per-project commands are still possible via `.claude/commands/` or `.opencode/commands/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
 
@@ -272,7 +242,7 @@ Once installed, modify the models in your commands to adapt them to your subscri
 
 | Phase | Opencode | Claude Code | Copilot |
 |-------|----------|-------------|---------|
-| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode/glm-5.1` | `claude-opus-4-7` High | Claude Opus 4.6 |
+| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/glm-5.1` | `claude-opus-4-7` High | Claude Opus 4.6 |
 | plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 | review (4) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
@@ -283,6 +253,11 @@ Once installed, modify the models in your commands to adapt them to your subscri
 | pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
 
 ### Choosing a model
+
+To list all models available in your opencode subscriptions, run:
+```bash
+opencode models
+```
 
 This chart may help you identify which models to test. The intelligence axis is highly task-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us, but you may find better alternatives for your specific needs.
 
