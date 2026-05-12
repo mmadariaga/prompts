@@ -242,15 +242,15 @@ Once installed, modify the models in your commands to adapt them to your subscri
 
 | Phase | Opencode | Claude Code | Copilot |
 |-------|----------|-------------|---------|
-| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/glm-5.1` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| review (4) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | Claude Opus 4.6 |
-| performance (6) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| accessibility (7) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
-| pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | GPT-5 mini |
+| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/glm-5.1` | `claude-opus-4-7` High | `github-copilot/claude-opus-4.6` |
+| plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | `github-copilot/claude-sonnet-4.6` |
+| implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | `github-copilot/gpt-5-mini` |
+| review (4) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | `github-copilot/claude-sonnet-4.6` |
+| security (5) | `opencode-go/qwen3.6-plus` | `claude-opus-4-7` High | `github-copilot/claude-opus-4.6` |
+| performance (6) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | `github-copilot/claude-sonnet-4.6` |
+| accessibility (7) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | `github-copilot/claude-sonnet-4.6` |
+| commit | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | `github-copilot/gpt-5-mini` |
+| pr | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | `github-copilot/gpt-5-mini` |
 
 ### Choosing a model
 
