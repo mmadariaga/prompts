@@ -243,9 +243,11 @@ See [INSTALL.claude.md](INSTALL.claude.md) for installation instructions.
 
 See [INSTALL.copilot.md](INSTALL.copilot.md) for installation instructions.
 
-> Per-project commands are still possible via `.claude/commands/` or `.opencode/commands/` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
+## Per project installation
 
-### Recommended models by phase
+Per-project commands are still possible via `.opencode/commands/`, `.claude/commands/` or `.github/prompts` at the repo root — useful when a project needs specific variants. Globals act as a base; locals override by name.
+
+### Recommended models by command
 
 Once installed, modify the models in your commands to adapt them to your subscriptions and personal preferences. The table below shows our default values.
 
@@ -270,8 +272,8 @@ opencode models
 
 This chart may help you identify which models to test. The intelligence axis is highly task-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us, but you may find better alternatives for your specific needs.
 
-The x-axis (cost) is usually quite reliable.
+The x-axis (cost) is more reliable.
 
 ![Intelligence vs Cost (May 2026)](Intelligence%20vs%20Cost%20(May%202026).png)
 
-Another ranking of models for coding tasks: https://llm-stats.com/leaderboards/best-ai-for-coding
+Another ranking of models focused on coding tasks: https://llm-stats.com/leaderboards/best-ai-for-coding
