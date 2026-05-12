@@ -1,3 +1,5 @@
+<glossary_format>
+
 # GLOSSARY.md Format
 
 Canonical structure for `GLOSSARY.md` — the single source of truth for a project's domain language. Adapted from https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md.
@@ -71,3 +73,4 @@ On the first domain term resolved during planning:
 
 1. Create `GLOSSARY.md` at the project root using the structure above with that single term.
 2. Notify the user: "Bootstrapped GLOSSARY.md with {term}. New domain terms will be appended here as they are resolved."
+</glossary_format>

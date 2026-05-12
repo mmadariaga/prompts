@@ -1,6 +1,6 @@
 # shared-ai
 
-AI commands for a cost-efficient, slightly opinionated, spec-first, structured development workflow: **spec → plan → implement → review → audits → PR**. Works great on opencode with an opencode-go subscription + any frontier model provider subscription (Claude / GPT / Copilot / Gemini). Can also run on Claude Code and GitHub Copilot (barely tested).
+AI commands for a cost-efficient, slightly opinionated, spec-first, structured development workflow: **spec → plan → implement → review → audits → PR**. Works great on opencode with an opencode-go subscription + any frontier model provider subscription (Claude / GPT / Copilot / Gemini). Can also run on Claude Code and maybe on GitHub Copilot (not tested yet).
 
 Each workflow step produces an artifact in `plans/{feature-name}/` that feeds into the next.
 
@@ -234,7 +234,7 @@ if (-not (Test-Path $jsonPath) -and -not (Test-Path $jsoncPath)) {
 
 See [INSTALL.claude.md](INSTALL.claude.md) for installation instructions.
 
-### Github Copilot
+### Github Copilot (Experimental - Not tested yet)
 
 See [INSTALL.copilot.md](INSTALL.copilot.md) for installation instructions.
 

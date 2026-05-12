@@ -7,7 +7,7 @@
 <TASK>
    ## Communication Mode
 
-   Apply rules from @~/.config/opencode/instructions/caveman.md (fetch the file). Default: lite. If `--full-caveman` appears in arguments, use full instead.
+   Caveman mode active (instructions loaded already). Default: lite. If `--full-caveman` appears in arguments, use full instead.
 
    ## Harness Context — Claude Code
 

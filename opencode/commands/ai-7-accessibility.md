@@ -3,6 +3,8 @@ description: Structured Accessibility Audit Prompt — WCAG 2.2 AA static review
 model: opencode-go/qwen3.6-plus
 ---
 
-Fetch @~/.config/opencode/instructions/accessibility.md and follow those instructions exactly. $ARGUMENTS
+Fetch @~/.config/opencode/instructions/caveman.md
+
+Also fetch @~/.config/opencode/instructions/accessibility.md and follow those instructions exactly. $ARGUMENTS
 
 Also fetch @~/.config/opencode/instructions/remember.chinese.md

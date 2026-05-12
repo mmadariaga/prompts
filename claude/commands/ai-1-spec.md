@@ -5,6 +5,9 @@ model: claude-opus-4-7
 effort: high
 ---
 
-Fetch @~/.claude/instructions/spec.claude.md and follow those instructions exactly. Feature request: $ARGUMENTS
+Fetch @~/.claude/instructions/caveman.md
+Fetch @~/.claude/instructions/glossary-format.md
+
+Also fetch @~/.claude/instructions/spec.claude.md and follow those instructions exactly. Feature request: $ARGUMENTS
 
 Also fetch @~/.claude/instructions/remember.md

@@ -1,4 +1,4 @@
-# GitHub Copilot — Installation
+# GitHub Copilot — Installation (Experimental - Not tested yet)
 
 Destination: `%APPDATA%\Code\User\`
 

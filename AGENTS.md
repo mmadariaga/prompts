@@ -74,7 +74,7 @@ The main agent reasons and synthesizes. Subagents do I/O. Key rules:
 - `plan.md`: uses glossary terms for identifiers.
 - `review.md`: validates language consistency in new code.
 - If it does not exist, bootstraps it with the first resolved term.
-- Format: fetches `instructions/glossary-format.md`.
+- Format: `instructions/glossary-format.md`, pre-loaded at startup by each harness wrapper (same pattern as caveman).
 
 ### RED → GREEN
 Integrated in `plan.md` and `implement.md`:
