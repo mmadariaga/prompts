@@ -1,8 +1,11 @@
 # shared-ai
 
-AI commands for a cost-efficient, slightly opinionated, spec-first, structured development workflow: **spec → plan → implement → review → audits → PR**. Works great on opencode with an opencode-go subscription + any frontier model provider subscription (Claude / GPT / Copilot / Gemini). Can also run on Claude Code and maybe on GitHub Copilot (not tested yet).
+Software development oriented AI commands for a cost-efficient, spec-first, structured workflow:
+**spec → plan → implement → review → audits → (iterate) → PR**.
 
 Each workflow step produces an artifact in `plans/{feature-name}/` that feeds into the next.
+
+Works great on **opencode** with an opencode-go subscription + any frontier model provider sub (Claude / GPT / Gemini / Copilot). Can also run on Claude Code, though it is less cost-effective there due to model availability and pricing constraints. Commands adapted for GitHub Copilot exist as well but have not been tested yet — they may work.
 
 ## Index
 
@@ -35,18 +38,31 @@ Each workflow step produces an artifact in `plans/{feature-name}/` that feeds in
 
 ```
 /ai-1-spec Add OAuth2 authentication
-/ai-2-plan plans/oauth2-auth/spec.md
-/ai-3-implement plans/oauth2-auth/plan.md
+/ai-2-plan @plans/oauth2-auth/spec.md
+/ai-3-implement @plans/oauth2-auth/plan.md
 
-# git add ... && /ai-commit  (after each step / STOP & COMMIT in the plan)
+############################################################
+# git add ... && /ai-commit
+#
+# OR
+#
+# let /ai-3-implement do the job
+############################################################
 
-/ai-4-review plans/oauth2-auth/spec.md
-# If ai-4-review recommends audits:
-/ai-5-security plans/oauth2-auth/spec.md
-/ai-6-performance plans/oauth2-auth/spec.md
-/ai-7-accessibility plans/oauth2-auth/spec.md
+/ai-4-review @plans/oauth2-auth/spec.md
 
-/ai-pr plans/oauth2-auth/spec.md
+############################################################
+# Audits based on /ai-4-review indications:
+############################################################
+/ai-5-security @plans/oauth2-auth/spec.md
+/ai-6-performance @plans/oauth2-auth/spec.md
+/ai-7-accessibility @plans/oauth2-auth/spec.md
+
+############################################################
+# ...iterate as needed...
+############################################################
+
+/ai-pr @plans/oauth2-auth/spec.md
 ```
 
 > **Important:** open a new chat between commands:
@@ -54,9 +70,9 @@ Each workflow step produces an artifact in `plans/{feature-name}/` that feeds in
 > - **Clean, replicable context** — each phase starts from scratch (Isolation Mode), making it easy to debug and replay steps in isolation.
 > - **Model isolation** — each phase uses the most cost-effective model for its task.
 
-## Triage in `ai-4-review`
+## Triage in `/ai-4-review`
 
-`ai-4-review` does not perform deep SAST, profiling, or axe analysis. It detects the touched surface and recommends the specific audit:
+`/ai-4-review` does not perform deep SAST, profiling, or axe analysis. It detects the touched surface and recommends the specific audit:
 
 - **Security surface** (auth, input parsing, dynamic queries, crypto, HTTP boundary, deps, logging) → `/ai-5-security`
 - **Performance surface** (new queries, endpoints, consumers, hot components, deps, loops over unbounded input, caching) → `/ai-6-performance`
@@ -70,23 +86,30 @@ After review and audits, start a new cycle from the existing artifacts if requir
 
 - **Full re-spec** — for major changes, new requirements, or architectural shifts:
   ```
-  /ai-1-spec Based on the specification we just implemented and the enhancements and bugs identified 
-  during review, create a new spec in plans/oauth2-auth-review-enhancements
+  /ai-1-spec
+  Based on the specification we just implemented and the enhancements and bugs identified during review, create a new spec.
+
   @plans/oauth2-auth/spec.md
   @plans/oauth2-auth/review.md
   @plans/oauth2-auth/security.md
   @plans/oauth2-auth/performance.md
   @plans/oauth2-auth/accessibility.md
+
+  # Your observations here: 
+  Implemented architecture doesn't fit client security requirements...
   ```
 
 - **Skip spec, re-plan only** — for contained fixes where the original specification is still valid. Keeps the spec unchanged and generates a fresh plan addressing the review findings:
   ```
-  /ai-2-plan Based on the existing spec and the review findings below, create a 
+  /ai-2-plan
+  Based on the existing spec and the review findings below, create a 
   new plan in plans/oauth2-auth/plan-iteration-2.md
+  
   @plans/oauth2-auth/spec.md
   @plans/oauth2-auth/review.md
   @plans/oauth2-auth/accessibility.md
 
+  # Your observations here: 
   Plus, I just found that the cancel button does nothing
   ```
 
@@ -96,10 +119,13 @@ After review and audits, start a new cycle from the existing artifacts if requir
 
 Every phase in this pipeline is optimized to minimize token consumption without sacrificing quality:
 
-#### Caveman Communication Mode
-Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred over full sentences. Flag `--full-caveman` in `$ARGUMENTS` activates full mode (even more aggressive abbreviation). Implemented via `instructions/caveman.md` included in every instruction file.
+### Caveman Communication Mode
+Default is **lite**: no filler, pleasantries, or hedging. Fragments preferred over full sentences.
 
-#### Token-Efficient Languages
+Flag `--full-caveman` in `$ARGUMENTS` activates full mode (even more aggressive abbreviation).
+Note: caveman mode only compresses the public output tokens, not the thinking, which represents only a fraction of the total output tokens. Don't expect miracles from --full-caveman.
+
+### Token-Efficient Languages
 
 All agents think and reason internally in English, regardless of the user's input language. English tokenizers produce fewer tokens per unit of meaning than most other languages [—non-English languages can cost 2–3× more tokens for the same meaning](https://x.com/arankomatsuzaki/status/2049125048792006965). This keeps reasoning efficient while user-facing chat always responds in the user's own language (Spanish, French, German, etc.). All generated artifacts (`spec.md`, `plan.md`, `review.md`, code, commit messages, PRs) are written in English.
 
@@ -109,42 +135,41 @@ All agents think and reason internally in English, regardless of the user's inpu
 We don't keep artifacts in English because continuous translation between Chinese and English when creating artifacts consumes more tokens than it saves. We do keep user-facing responses in the user's language because otherwise this mode would be unusable unless you know Chinese. Besides, internal thinking represents far more tokens than the output, so the savings still apply. 
 
 
-
-#### Task-Matched Model Selection
+### Task-Matched Model Selection
 Each phase uses a model chosen for its specific strengths: reasoning-heavy phases (spec, security) use frontier models; planning and review use balanced mid-range models; implementation, commit, and PR use fast, cost-efficient models. See the [Recommended models by phase](#recommended-models-by-phase) table above.
 
-### Proven Strategies
+## Proven Strategies
 
-#### Spec First
+### Spec First
 Every feature starts with a specification (`spec.md`) that captures goals, acceptance criteria, technical constraints, and design decisions. The plan (`plan.md`) is derived from the spec, and implementation follows the plan. This is [Spec-Driven Development](https://scrummanager.com/community/spec-driven-development-qu-es-de-dnde-viene-y-por-qu-importa) at the *spec-first* level —the spec drives the current task and is kept as a living artifact for the pipeline phases that follow (review, security, performance, accessibility). No *vibe coding*: every line of generated code is grounded in an explicit contract. The spec uses a **common body + harness context** architecture (`spec.common.md` + per-harness wrappers) to avoid tripling maintenance across Claude Code, opencode, and Copilot.
 
-#### Isolation Mode
+### Isolation Mode
 Every command starts with zero inherited context —it reads only the `<TASK>` block and the artifacts it needs. This prevents context pollution across phases, makes each run replicable, and enables safe model switching between phases.
 
-#### RED → GREEN
+### RED → GREEN
 Each testable step includes a failing test (RED) before the minimal implementation (GREEN). The agent runs RED first, confirms the failure is a valid assertion failure (not a setup error), then writes GREEN and verifies it passes. This proves the test is real and not tautological.
 
-#### Ubiquitous Language via GLOSSARY.md
+### Ubiquitous Language via GLOSSARY.md
 Domain terms are captured in a living `GLOSSARY.md` at the project root. Spec reads and appends new terms inline (no batching), Plan uses canonical terms for all new identifiers, and Review validates language consistency in the diff. This enforces a DDD-style ubiquitous language across the entire pipeline —every agent and every artifact speaks the same vocabulary.
 
-#### Single Responsibility Per Phase
+### Single Responsibility Per Phase
 Each phase produces exactly one artifact. Only `ai-3-implement` writes code; spec, plan, review, and audits produce only markdown in `plans/{feature-name}/`. No phase oversteps its scope, and every instruction file ends with a "Scope Reminder" block to enforce this.
 
-#### Sub-Agent Exploration
+### Sub-Agent Exploration
 Complex or exploratory tasks are delegated to sub-agents running cost-effective models matched to the subtask complexity. By default, sub-agents do not inherit the main session's token window, preventing context pollution and keeping costs predictable. Each subagent call declares an **output contract** (exact fields, length cap, no raw content) so only distilled signal enters the main context. The main agent never calls WebFetch directly — all external doc lookups go through the cheap research subagent. Tool-call caps per tier: cheap ≤30, escalated ≤15, fallback ≤10. 
 
 >This technique can reduce the cost of `/ai-1-spec` on I/O-intensive tasks, like audits, to a third.
 
-#### Multi-Pass Review (9 categories)
+### Multi-Pass Review (9 categories)
 The review agent runs nine distinct passes across the full diff: Domain Alignment, Correctness & Bugs, Security triage, Performance triage, Maintainability, Testing, Codebase Consistency, Domain Language Consistency, and Documentation & Migrations.
 
-#### No self-review bias
+### No self-review bias
 The review phase (`ai-4-review`) runs on a different model than the one used for planning (`ai-2-plan`). The plan agent proposes the code architecture and design decisions — having the same model later review its own output tends to confirm its own assumptions and miss the same blind spots it had when designing the solution. Using a separate model for review introduces a genuinely independent perspective — different training data, different reasoning patterns, different failure modes — which catches real issues that self-review would not.
 
-#### Deferred Verification
+### Deferred Verification
 Human checks (browser/UI behavior, visual confirmation) are deferred to the integration step where the behavior is first observable —the plan asks the user to verify parts of the feature as early as possible, not all at the end. Every deferred check appears exactly once, labeled with its origin step.
 
-#### ADR/DDR Proposals
+### ADR/DDR Proposals
 Proposes creating an ADR/DDR if all 3 criteria below are met:
 1. **Hard to reverse** — the cost of changing later is meaningful.
 2. **Surprising without context** — a future reader would wonder "why did they do it this way?"
@@ -253,7 +278,7 @@ Once installed, modify the models in your commands to adapt them to your subscri
 
 | Phase | Opencode | Claude Code | Copilot |
 |-------|----------|-------------|---------|
-| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode-go/glm-5.1` | `claude-opus-4-7` High | `github-copilot/claude-opus-4.6` |
+| spec (1) | `opencode/gpt-5.5` <br />\|\| `opencode/claude-opus-4-7`<br />\|\| `opencode/gemini-3.1-pro` | `claude-opus-4-7` High | `github-copilot/claude-opus-4.6` |
 | plan (2) | `opencode-go/kimi-k2.6` | `claude-sonnet-4-6` | `github-copilot/claude-sonnet-4.6` |
 | implement (3) | `opencode-go/deepseek-v4-flash` | `claude-haiku-4-5` | `github-copilot/gpt-5-mini` |
 | review (4) | `opencode-go/qwen3.6-plus` | `claude-sonnet-4-6` | `github-copilot/claude-sonnet-4.6` |
@@ -270,9 +295,9 @@ To list all models available in your opencode subscriptions, run:
 opencode models
 ```
 
-This chart may help you identify which models to test. The intelligence axis is highly task-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us, but you may find better alternatives for your specific needs.
+This chart may help you identify which models to test. The intelligence axis is highly task-type-dependent — do not rely on it without running your own tests tailored to your project and specific use case. We set the defaults to models that have worked best for us, but you may find better alternatives for your specific needs.
 
-The x-axis (cost) is more reliable.
+The x-axis (cost) is usually more reliable.
 
 ![Intelligence vs Cost (May 2026)](Intelligence%20vs%20Cost%20(May%202026).png)
 
