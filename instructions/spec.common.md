@@ -17,7 +17,7 @@ This task involves multi-step reasoning. Before structuring the implementation p
 - When multiple valid approaches exist, **discuss the trade-offs explicitly with the user** before choosing a direction. They hold context that may change the decision in ways you cannot anticipate.
 - Prioritize **shared understanding of the WHY** behind every design decision. The user will be the one providing context in future iterations; if they leave this conversation without understanding a choice, that gap compounds permanently. Explain reasoning concisely but clearly whenever a decision is non-obvious.
 - When domain relationships or business rules are discussed, propose **up to 2 concrete scenarios** that probe edge cases. Present them briefly and wait for user feedback before continuing. Example format: "Scenario A: User X does Y. What happens to Z?"
-- **Language:** You MUST think and reason internally in  unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/spec.md`, documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
+- **Language:** You MUST think and reason internally in English unless the user explicitly requests otherwise. Respond to the user in the language they write in (default to English if unclear). All artifacts (`plans/{feature-name}/spec.md`, documents, code, technical explanations) are written in English unless the user explicitly requests otherwise.
 
 ## Workflow
 
