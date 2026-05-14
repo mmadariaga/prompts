@@ -11,12 +11,24 @@ Can also run on Claude Code, though it is less cost-effective there due to model
 
 Commands adapted for GitHub Copilot exist as well but have not been tested yet — they may work.
 
+## Why use this
+
+**You stay in control.** The AI is a peer, not a decision-maker. Every phase is a conversation where you validate direction before anything gets written. You don't delegate to the AI — you collaborate with it.
+
+**Knowledge stays in the project.** Each phase produces a written artifact: the spec captures the why, the plan captures the how, the review captures what was found. When you come back months later — or hand it off to someone else — the reasoning is already there.
+
+**Spec first, always.** No code is written without a prior spec. The spec defines acceptance criteria, design decisions, and technical constraints. The plan is derived from it. This is the difference between AI-assisted development and vibe coding.
+
+**Cost-effective by design.** Each phase runs on the cheapest model that can do the job. Cheap models for commits and PRs, mid-range for planning and review, frontier only where reasoning depth actually matters. Agents think in English regardless of your language, and communication is compressed to the minimum. You get the output — not the filler.
+
+**Testing is not optional.** Every implementation step includes a failing test (RED) before the code that makes it pass (GREEN). The agent runs RED first to confirm the assertion is real, then writes GREEN. What can't be covered by unit tests — visual behavior, end-to-end flows — becomes an explicit verification request to you, placed at the earliest point it can be observed. Nothing ships unverified.
+
 ## Index
 
 - [Commands](#sequential-pipeline-numbered)
 - [Typical usage](#typical-usage)
 - [Cost effective strategies](#cost-effective-strategies)
-- [Project highlights](#proven-strategies)
+- [Project highlights](#project-highlights)
 - [Installation](#global-installation-multi-project)
 - [Model recommendation](#recommended-models-by-command-and-provider)
 
@@ -146,7 +158,7 @@ Research or exploratory tasks are delegated to **sub-agents running cost-effecti
 
 >This technique can reduce the cost of `/ai-1-spec` on I/O-intensive tasks, like audits, to a third.
 
-## Proven Strategies
+## Project highlights
 
 ### Isolation Mode
 Every command starts with zero inherited context —it reads only the `<TASK>` block and the artifacts it needs. This prevents context pollution across phases, makes each run replicable, and enables safe model switching between phases.
